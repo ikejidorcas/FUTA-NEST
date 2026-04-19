@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FUTA Nest — Available Houses</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background-color: #f8faff; margin: 0; }
+
+        .navbar {
+            background-color: #050d1f;
+            padding: 16px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #4da6ff;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+
+        .btn-post {
+            background: linear-gradient(135deg, #1565c0, #1e88e5);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 22px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .btn-post:hover { opacity: 0.85; color: white; }
+
+        .page-header {
+            background: #050d1f;
+            padding: 50px 0 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .page-header h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .page-header p { color: #8ab4d4; margin: 0; }
+
+        .filter-section {
+            background: white;
+            border-bottom: 1px solid #e8edf5;
+            padding: 20px 0;
+            position: sticky;
+            top: 65px;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+
+        .filter-section .form-control,
+        .filter-section .form-select {
+            border: 2px solid #e8edf5;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.9rem;
+        }
+
+        .filter-section .form-control:focus,
+        .filter-section .form-select:focus {
+            border-color: #4da6ff;
+            box-shadow: none;
+        }
+
+        .btn-filter {
+            background: linear-gradient(135deg, #1565c0, #1e88e5);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 11px 28px;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .btn-filter:hover { opacity: 0.9; color: white; }
+
+        .results-info {
+            font-size: 0.9rem;
+            color: #7a8ca0;
+            padding: 20px 0 10px;
+        }
+
+        .results-info strong { color: #050d1f; }
+
+        .listing-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            border: 1px solid #e8edf5;
+            transition: all 0.2s;
+            height: 100%;
+        }
+
+        .listing-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(21,101,192,0.12);
+            border-color: #4da6ff;
+        }
+
+        .listing-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .listing-body { padding: 20px; }
+
+        .price-tag {
+            background: #050d1f;
+            color: #4da6ff;
+            font-weight: 800;
+            font-size: 1rem;
+            padding: 5px 14px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .area-tag {
+            background: #e3f0ff;
+            color: #1565c0;
+            font-weight: 600;
+            font-size: 0.78rem;
+            padding: 5px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .listing-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #050d1f;
+            margin: 12px 0 6px;
+        }
+
+        .listing-desc {
+            font-size: 0.85rem;
+            color: #7a8ca0;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .listing-meta {
+            font-size: 0.82rem;
+            color: #7a8ca0;
+            margin-bottom: 16px;
+            padding-top: 10px;
+            border-top: 1px solid #f0f4ff;
+        }
+
+        .listing-meta strong { color: #050d1f; }
+
+        .btn-video {
+            background: #f0f4ff;
+            color: #1565c0;
+            border: 1px solid #c8d9f5;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            width: 100%;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-video:hover {
+            background: #1565c0;
+            color: white;
+            border-color: #1565c0;
+        }
+
+        .btn-call {
+            background: linear-gradient(135deg, #1565c0, #1e88e5);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 9px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            width: 100%;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            margin-bottom: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-call:hover { opacity: 0.9; color: white; }
+
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 9px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            width: 100%;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            transition: opacity 0.2s;
+        }
+
+        .btn-whatsapp:hover { opacity: 0.9; color: white; }
+
+        .no-results {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .no-results h4 {
+            font-weight: 700;
+            color: #050d1f;
+            margin-bottom: 10px;
+        }
+
+        .no-results p { color: #7a8ca0; }
+
+        .btn-clear {
+            background: linear-gradient(135deg, #1565c0, #1e88e5);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 28px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 16px;
+        }
+
+        .btn-clear:hover { opacity: 0.9; color: white; }
+
+        footer {
+            background: #030810;
+            color: #4a6080;
+            padding: 30px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            margin-top: 60px;
+        }
+
+        footer span { color: #4da6ff; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar d-flex justify-content-between align-items-center">
+        <a href="/" class="brand-name">FUTA NEST</a>
+        <a href="/post-listing" class="btn-post">Post a Listing</a>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h2>Available Houses</h2>
+            <p>
+                {% if area %}Showing results for <strong style="color:white;">{{ area }}</strong>{% endif %}
+                {% if max_price %} — under <strong style="color:white;">₦{{ max_price }}</strong>/yr{% endif %}
+                {% if not area and not max_price %}Browse all available listings{% endif %}
+            </p>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-section">
+        <div class="container">
+            <form action="/listings" method="GET">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-4">
+                        <select name="area" class="form-select">
+                            <option value="">All Areas</option>
+                            <option value="North Gate" {% if area == 'North Gate' %}selected{% endif %}>North Gate</option>
+                            <option value="West Gate"  {% if area == 'West Gate'  %}selected{% endif %}>West Gate</option>
+                            <option value="South Gate" {% if area == 'South Gate' %}selected{% endif %}>South Gate</option>
+                            <option value="Ipinsa"     {% if area == 'Ipinsa'     %}selected{% endif %}>Ipinsa</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="number" name="max_price" class="form-control"
+                               placeholder="Max price per year (₦)"
+                               value="{{ max_price if max_price }}">
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn-filter btn">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="results-info">
+            <strong>{{ listings|length }}</strong> listing{{ 's' if listings|length != 1 }} found
+        </div>
+
+        {% if listings %}
+        <div class="row">
+            {% for listing in listings %}
+            <div class="col-md-4 mb-4">
+                <div class="listing-card">
+
+                    {% if listing.image_url %}
+                    <img src="{{ listing.image_url }}" alt="House photo" class="listing-img">
+                    {% else %}
+                    <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&q=80"
+                         alt="House photo" class="listing-img">
+                    {% endif %}
+
+                    <div class="listing-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="price-tag">₦{{ "{:,}".format(listing.price) }}/yr</span>
+                            <span class="area-tag">{{ listing.area }}</span>
+                        </div>
+
+                        <div class="listing-title">{{ listing.title }}</div>
+                        <div class="listing-desc">{{ listing.description }}</div>
+
+                        <div class="listing-meta">
+                            <strong>{{ listing.rooms }}</strong> Room(s) &nbsp;&bull;&nbsp;
+                            Agent: <strong>{{ listing.agent_name }}</strong>
+                        </div>
+
+                        {% if listing.video_url %}
+                        <a href="{{ listing.video_url }}" target="_blank" class="btn-video">
+                            Watch Video Tour
+                        </a>
+                        {% endif %}
+
+                        <a href="tel:{{ listing.phone }}" class="btn-call">
+                            Call Agent
+                        </a>
+                        <a href="https://wa.me/{{ listing.phone }}" target="_blank" class="btn-whatsapp">
+                            WhatsApp Agent
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="no-results">
+            <h4>No listings found</h4>
+            <p>Try a different area or increase your budget.</p>
+            <a href="/listings" class="btn-clear">See All Listings</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <footer>
+        <span>FUTA NEST</span> &mdash; The Official Student Housing Platform for FUTA &copy; 2025
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

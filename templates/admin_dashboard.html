@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FUTA Nest — Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background-color: #f8faff; margin: 0; }
+
+        .navbar {
+            background-color: #050d1f;
+            padding: 16px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #4da6ff;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+
+        .admin-badge {
+            background: rgba(77,166,255,0.15);
+            border: 1px solid rgba(77,166,255,0.3);
+            color: #4da6ff;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-left: 10px;
+        }
+
+        .btn-logout {
+            background: transparent;
+            color: #8ab4d4;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            padding: 8px 18px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover { border-color: #ff6b6b; color: #ff6b6b; }
+
+        .page-header {
+            background: #050d1f;
+            padding: 40px 0 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .page-header h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .page-header p { color: #8ab4d4; margin: 0; font-size: 0.9rem; }
+
+        .stat-card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            border: 1px solid #e8edf5;
+            border-top: 4px solid #1565c0;
+        }
+
+        .stat-number {
+            font-size: 2.4rem;
+            font-weight: 900;
+            color: #1565c0;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #7a8ca0;
+            font-weight: 500;
+        }
+
+        .stat-card.pending { border-top-color: #f59e0b; }
+        .stat-card.pending .stat-number { color: #f59e0b; }
+
+        .stat-card.approved { border-top-color: #10b981; }
+        .stat-card.approved .stat-number { color: #10b981; }
+
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            border: 1px solid #e8edf5;
+            margin-bottom: 24px;
+        }
+
+        .section-card h5 {
+            font-weight: 800;
+            color: #050d1f;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .count-pill {
+            background: #e3f0ff;
+            color: #1565c0;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .count-pill.orange {
+            background: #fff3cd;
+            color: #92600a;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+
+        thead tr {
+            border-bottom: 2px solid #e8edf5;
+        }
+
+        thead th {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #7a8ca0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 0 12px 12px;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f0f4ff;
+            transition: background 0.15s;
+        }
+
+        tbody tr:hover { background: #f8faff; }
+        tbody tr:last-child { border-bottom: none; }
+
+        tbody td {
+            padding: 14px 12px;
+            font-size: 0.88rem;
+            color: #2d3748;
+            vertical-align: middle;
+        }
+
+        .listing-title-cell strong {
+            font-weight: 700;
+            color: #050d1f;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .listing-title-cell small { color: #7a8ca0; }
+
+        .badge-pending {
+            background: #fff3cd;
+            color: #92600a;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .badge-approved {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .btn-approve {
+            background: linear-gradient(135deg, #1565c0, #1e88e5);
+            color: white;
+            border: none;
+            border-radius: 7px;
+            padding: 6px 16px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: opacity 0.2s;
+        }
+
+        .btn-approve:hover { opacity: 0.85; color: white; }
+
+        .btn-delete {
+            background: #fff0f0;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+            border-radius: 7px;
+            padding: 6px 16px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .btn-delete:hover {
+            background: #c62828;
+            color: white;
+            border-color: #c62828;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            border: 1px solid #a5d6a7;
+            color: #2e7d32;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .alert-danger {
+            background: #ffebee;
+            border: 1px solid #ef9a9a;
+            color: #c62828;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7a8ca0;
+        }
+
+        .empty-state p { margin: 0; font-size: 0.9rem; }
+
+        footer {
+            background: #030810;
+            color: #4a6080;
+            padding: 24px 0;
+            text-align: center;
+            font-size: 0.88rem;
+            margin-top: 40px;
+        }
+
+        footer span { color: #4da6ff; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+            <a href="/" class="brand-name">FUTA NEST</a>
+            <span class="admin-badge">ADMIN</span>
+        </div>
+        <a href="/admin/logout" class="btn-logout">Logout</a>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h2>Admin Dashboard</h2>
+            <p>Manage all house listings — approve or remove submissions</p>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Stats -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="stat-card">
+                    <div class="stat-number">{{ all_listings|length }}</div>
+                    <div class="stat-label">Total Submissions</div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="stat-card pending">
+                    <div class="stat-number">{{ pending|length }}</div>
+                    <div class="stat-label">Awaiting Approval</div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="stat-card approved">
+                    <div class="stat-number">{{ all_listings|length - pending|length }}</div>
+                    <div class="stat-label">Live Listings</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Listings -->
+        <div class="section-card">
+            <h5>
+                Pending Approval
+                <span class="count-pill orange">{{ pending|length }}</span>
+            </h5>
+            {% if pending %}
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Listing</th>
+                            <th>Agent</th>
+                            <th>Phone</th>
+                            <th>Area</th>
+                            <th>Price</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for listing in pending %}
+                        <tr>
+                            <td class="listing-title-cell">
+                                <strong>{{ listing.title }}</strong>
+                                <small>{{ listing.description[:55] }}{% if listing.description|length > 55 %}...{% endif %}</small>
+                            </td>
+                            <td>{{ listing.agent_name }}</td>
+                            <td>{{ listing.phone }}</td>
+                            <td>{{ listing.area }}</td>
+                            <td>₦{{ "{:,}".format(listing.price) }}</td>
+                            <td>
+                                <a href="/admin/approve/{{ listing.id }}" class="btn-approve me-1">Approve</a>
+                                <a href="/admin/delete/{{ listing.id }}" class="btn-delete"
+                                   onclick="return confirm('Delete this listing?')">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No pending listings — you are all caught up!</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- All Listings -->
+        <div class="section-card">
+            <h5>
+                All Listings
+                <span class="count-pill">{{ all_listings|length }}</span>
+            </h5>
+            {% if all_listings %}
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Listing</th>
+                            <th>Agent</th>
+                            <th>Area</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for listing in all_listings %}
+                        <tr>
+                            <td class="listing-title-cell">
+                                <strong>{{ listing.title }}</strong>
+                            </td>
+                            <td>{{ listing.agent_name }}</td>
+                            <td>{{ listing.area }}</td>
+                            <td>₦{{ "{:,}".format(listing.price) }}</td>
+                            <td>
+                                {% if listing.approved %}
+                                <span class="badge-approved">Live</span>
+                                {% else %}
+                                <span class="badge-pending">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if not listing.approved %}
+                                <a href="/admin/approve/{{ listing.id }}" class="btn-approve me-1">Approve</a>
+                                {% endif %}
+                                <a href="/admin/delete/{{ listing.id }}" class="btn-delete"
+                                   onclick="return confirm('Are you sure?')">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No listings yet.</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <footer>
+        <span>FUTA NEST</span> &mdash; Admin Panel &copy; 2025
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

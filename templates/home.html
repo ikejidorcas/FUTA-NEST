@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FUTA Nest — Student Housing Finder</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+
+        body { background-color: #f8faff; margin: 0; }
+
+        .navbar {
+            background-color: #050d1f;
+            padding: 16px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #4da6ff;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+
+        .btn-post {
+            background: linear-gradient(135deg, #1565c0, #1e88e5);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 22px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .btn-post:hover { opacity: 0.85; color: white; }
+
+        .hero {
+            background: #050d1f;
+            min-height: 92vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzGucpMP3gV7jpp_2thT8qhFKeEkNRmYLLBQ&s') center/cover no-repeat;
+            opacity: 0.12;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 120px;
+            background: linear-gradient(to bottom, transparent, #f8faff);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 60px 0;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(77,166,255,0.15);
+            border: 1px solid rgba(77,166,255,0.3);
+            color: #4da6ff;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .hero-title {
+            font-size: 3.8rem;
+            font-weight: 900;
+            color: white;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .hero-title span { color: #4da6ff; }
+
+        .hero-subtitle {
+            color: #8ab4d4;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            max-width: 500px;
+            margin-bottom: 40px;
+        }
+
+        .search-card {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .search-card h5 {
+            font-weight: 700;
+            color: #050d1f;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        .search-card .form-control,
+        .search-card .form-select {
+            border: 2px solid #e8edf5;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            color: #050d1f;
+            transition: border-color 0.2s;
+        }
+
+        .search-card .form-control:focus,
+        .search-card .form-select:focus {
+            border-color: #4da6ff;
+            box-shadow: 0 0 0 3px rgba(77,166,255,0.1);
+        }
+
+        .btn-search {
+            background: linear-gradient(135deg, #1565c0, #1e88e5);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-weight: 700;
+            font-size: 1rem;
+            width: 100%;
+            letter-spacing: 0.5px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-search:hover { opacity: 0.9; color: white; }
+
+        .stats-section {
+            background: white;
+            padding: 40px 0;
+            border-bottom: 1px solid #e8edf5;
+        }
+
+        .stat-item { text-align: center; }
+
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #1565c0;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #7a8ca0;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .areas-section { padding: 80px 0; }
+
+        .section-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #1565c0;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #050d1f;
+            margin-bottom: 40px;
+        }
+
+        .area-card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+            border: 1px solid #e8edf5;
+            transition: all 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            color: inherit;
+        }
+
+        .area-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(21,101,192,0.15);
+            border-color: #4da6ff;
+            color: inherit;
+        }
+
+        .area-icon {
+            width: 48px;
+            height: 48px;
+            background: #e3f0ff;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .area-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: #1565c0;
+            fill: none;
+        }
+
+        .area-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: #050d1f;
+            margin-bottom: 4px;
+        }
+
+        .area-desc {
+            font-size: 0.85rem;
+            color: #7a8ca0;
+        }
+
+        .features-section {
+            background: #050d1f;
+            padding: 80px 0;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 28px;
+            height: 100%;
+            transition: background 0.2s;
+        }
+
+        .feature-card:hover {
+            background: rgba(77,166,255,0.08);
+            border-color: rgba(77,166,255,0.2);
+        }
+
+        .feature-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(77,166,255,0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .feature-icon svg {
+            width: 22px;
+            height: 22px;
+            stroke: #4da6ff;
+            fill: none;
+        }
+
+        .feature-title {
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .feature-desc {
+            color: #8ab4d4;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .cta-section h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .cta-section p {
+            color: rgba(255,255,255,0.75);
+            font-size: 1.05rem;
+            margin-bottom: 32px;
+        }
+
+        .btn-cta {
+            background: white;
+            color: #1565c0;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 32px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: opacity 0.2s;
+            display: inline-block;
+        }
+
+        .btn-cta:hover { opacity: 0.9; color: #1565c0; }
+
+        footer {
+            background: #030810;
+            color: #4a6080;
+            padding: 30px 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        footer span { color: #4da6ff; font-weight: 700; }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.4rem; }
+            .navbar { padding: 14px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar d-flex justify-content-between align-items-center">
+        <a href="/" class="brand-name">FUTA NEST</a>
+        <a href="/post-listing" class="btn-post">Post a Listing</a>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 hero-content">
+                    <div class="hero-badge">FUTA STUDENT HOUSING</div>
+                    <h1 class="hero-title">Find Your <span>Perfect Home</span> Near FUTA</h1>
+                    <p class="hero-subtitle">
+                        Browse verified houses around FUTA — search by area and budget, 
+                        watch video tours, and contact agents directly.
+                    </p>
+                </div>
+                <div class="col-lg-5 offset-lg-1 hero-content">
+                    <div class="search-card">
+                        <h5>Find a House</h5>
+                        <form action="/listings" method="GET">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold small">Select Area</label>
+                                <select name="area" class="form-select">
+                                    <option value="">All Areas</option>
+                                    <option value="North Gate">North Gate</option>
+                                    <option value="West Gate">West Gate</option>
+                                    <option value="South Gate">South Gate</option>
+                                    <option value="Ipinsa">Ipinsa</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold small">Maximum Budget (₦/year)</label>
+                                <input type="number" name="max_price" class="form-control"
+                                       placeholder="e.g. 150,000">
+                            </div>
+                            <button type="submit" class="btn-search btn">
+                                Search Available Houses
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-4 stat-item">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Areas Covered</div>
+                </div>
+                <div class="col-4 stat-item">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Verified Listings</div>
+                </div>
+                <div class="col-4 stat-item">
+                    <div class="stat-number">Free</div>
+                    <div class="stat-label">For Students</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Areas -->
+    <section class="areas-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <div class="section-label">Where We Operate</div>
+                <h2 class="section-title">Areas Around FUTA</h2>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-6 mb-4">
+                    <a href="/listings?area=North+Gate" class="area-card">
+                        <div class="area-icon">
+                            <svg viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        </div>
+                        <div class="area-name">North Gate</div>
+                        <div class="area-desc">Click to browse listings</div>
+                    </a>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <a href="/listings?area=West+Gate" class="area-card">
+                        <div class="area-icon">
+                            <svg viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        </div>
+                        <div class="area-name">West Gate</div>
+                        <div class="area-desc">Click to browse listings</div>
+                    </a>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <a href="/listings?area=South+Gate" class="area-card">
+                        <div class="area-icon">
+                            <svg viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        </div>
+                        <div class="area-name">South Gate</div>
+                        <div class="area-desc">Click to browse listings</div>
+                    </a>
+                </div>
+                <div class="col-md-3 col-6 mb-4">
+                    <a href="/listings?area=Ipinsa" class="area-card">
+                        <div class="area-icon">
+                            <svg viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        </div>
+                        <div class="area-name">Ipinsa</div>
+                        <div class="area-desc">Click to browse listings</div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <div class="section-label" style="color:#4da6ff;">Why FUTA Nest</div>
+                <h2 class="section-title" style="color:white;">Everything You Need</h2>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <div class="feature-title">Smart Search</div>
+                        <div class="feature-desc">Filter by area and budget. Only see houses you can actually afford in the location you want.</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.069A1 1 0 0121 8.87v6.26a1 1 0 01-1.447.894L15 14M3 8h12v8H3z"/></svg>
+                        </div>
+                        <div class="feature-title">Video Tours</div>
+                        <div class="feature-desc">Watch real video walkthroughs uploaded by agents before you visit in person.</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        </div>
+                        <div class="feature-title">Admin Verified</div>
+                        <div class="feature-desc">Every listing is reviewed and approved before students can see it. No scams.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Are You a House Agent?</h2>
+            <p>Post your listing and reach hundreds of FUTA students looking for accommodation.</p>
+            <a href="/post-listing" class="btn-cta">Post a Listing — It's Free</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <span>FUTA NEST</span> &mdash; The Official Student Housing Platform for FUTA &copy; 2025
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
