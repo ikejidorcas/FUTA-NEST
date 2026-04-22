@@ -375,8 +375,9 @@
                             </div>
                             <div class="mb-4">
                                 <label class="form-label fw-semibold small">Maximum Budget (₦/year)</label>
-                                <input type="number" name="max_price" class="form-control"
-                                       placeholder="e.g. 150,000">
+                                <input type="text" name="price" id="price-display" class="form-control"
+       placeholder="e.g. 150,000" required>
+<input type="hidden" name="price" id="price-actual">
                             </div>
                             <button type="submit" class="btn-search btn">
                                 Search Available Houses
@@ -510,5 +511,40 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+const display = document.getElementById('price-display');
+const actual = document.getElementById('price-actual');
+
+display.addEventListener('input', function() {
+    let raw = this.value.replace(/,/g, '').replace(/[^0-9]/g, '');
+    actual.value = raw;
+    if (raw) {
+        this.value = parseInt(raw).toLocaleString('en-NG');
+    }
+});
+</script>
+<div id="wake-screen" style="position:fixed;inset:0;background:#050d1f;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.5s;">
+        <div style="text-align:center;">
+            <div style="font-size:1.8rem;font-weight:900;letter-spacing:3px;color:#4da6ff;margin-bottom:20px;">FUTA NEST</div>
+            <div style="width:40px;height:40px;border:3px solid rgba(77,166,255,0.2);border-top-color:#4da6ff;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 20px;"></div>
+            <div style="color:#8ab4d4;font-size:0.95rem;">Waking up the server, please wait...</div>
+            <div style="color:#4a6080;font-size:0.8rem;margin-top:8px;">This takes about 30 seconds on first visit</div>
+        </div>
+    </div>
+    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+    <script>
+        window.addEventListener('load', function() {
+            const s = document.getElementById('wake-screen');
+            s.style.opacity = '0';
+            setTimeout(() => s.style.display = 'none', 500);
+        });
+        const display = document.getElementById('price-display');
+        const actual = document.getElementById('price-actual');
+        display.addEventListener('input', function() {
+            let raw = this.value.replace(/,/g, '').replace(/[^0-9]/g, '');
+            actual.value = raw;
+            if (raw) this.value = parseInt(raw).toLocaleString('en-NG');
+        });
+    </script>
 </body>
 </html>
