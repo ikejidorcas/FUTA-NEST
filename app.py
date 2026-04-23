@@ -47,7 +47,7 @@ def listings():
     area = request.args.get('area', '')
     max_price = request.args.get('max_price', '')
 
-    params = {"approved": "eq.true", "order": "created_at.desc"}
+    params = {"approved": "eq.true", "available": "eq.true", "order": "created_at.desc"}
     if area:
         params["area"] = f"eq.{area}"
     if max_price:
@@ -68,8 +68,8 @@ def post_listing():
         video_url = ''
         cloudinary.config(
     cloud_name="da6gxwgjq",
-    api_key="118865179574565",
-    api_secret="w8b0XzUGSA3B3sMWw5dxproZReA"
+    api_key="636751886513396",
+    api_secret="5AZMUQGgtFo_A5c9cZZTmPlpJYo"
 )
 
         # Handle image upload to Cloudinary
@@ -164,6 +164,23 @@ def delete_listing(listing_id):
 def admin_logout():
     session.pop('admin', None)
     return redirect('/')
+
+@app.route('/taken/<listing_id>')
+def mark_taken(listing_id):
+    supabase_request("PATCH", "listings",
+                     data={"available": False},
+                     params={"id": f"eq.{listing_id}"})
+    return render_template('taken.html')
+
+@app.route('/admin/taken/<listing_id>')
+def admin_mark_taken(listing_id):
+    if not session.get('admin'):
+        return redirect('/admin')
+    supabase_request("PATCH", "listings",
+                     data={"available": False},
+                     params={"id": f"eq.{listing_id}"})
+    flash('Listing marked as taken!', 'success')
+    return redirect('/admin/dashboard')
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port=8080)

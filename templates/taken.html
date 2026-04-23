@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FUTA Nest — Listing Taken</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body {
+            background: linear-gradient(135deg, #050d1f, #0a3d6b);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            text-align: center;
+            max-width: 480px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .icon {
+            width: 64px;
+            height: 64px;
+            background: #e8f5e9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        .icon svg {
+            width: 32px;
+            height: 32px;
+            stroke: #2e7d32;
+            fill: none;
+        }
+        h2 { font-weight: 800; color: #050d1f; margin-bottom: 12px; }
+        p { color: #7a8ca0; line-height: 1.6; }
+        .btn-home {
+            background: linear-gradient(135deg, #1565c0, #1e88e5);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 28px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .btn-home:hover { opacity: 0.9; color: white; }
+        .brand { color: #4da6ff; font-weight: 900; letter-spacing: 2px; font-size: 1.2rem; margin-bottom: 24px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="brand">FUTA NEST</div>
+        <div class="icon">
+            <svg viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+            </svg>
+        </div>
+        <h2>Listing Marked as Taken</h2>
+        <p>Your listing has been removed from student view. Thank you for keeping FUTA Nest up to date!</p>
+        <a href="/" class="btn-home">Go to Homepage</a>
+    </div>
+</body>
+</html>

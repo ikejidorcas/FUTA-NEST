@@ -344,11 +344,16 @@
                             <td>{{ listing.phone }}</td>
                             <td>{{ listing.area }}</td>
                             <td>₦{{ "{:,}".format(listing.price) }}</td>
-                            <td>
-                                <a href="/admin/approve/{{ listing.id }}" class="btn-approve me-1">Approve</a>
-                                <a href="/admin/delete/{{ listing.id }}" class="btn-delete"
-                                   onclick="return confirm('Delete this listing?')">Delete</a>
-                            </td>
+                            {% if not listing.approved %}
+<a href="/admin/approve/{{ listing.id }}" class="btn-approve me-1">Approve</a>
+{% endif %}
+{% if listing.available %}
+<a href="/admin/taken/{{ listing.id }}" class="btn-delete me-1"
+   style="background:#ff9800;border-color:#ff9800;"
+   onclick="return confirm('Mark as taken?')">Taken</a>
+{% endif %}
+<a href="/admin/delete/{{ listing.id }}" class="btn-delete"
+   onclick="return confirm('Are you sure?')">Delete</a>
                         </tr>
                         {% endfor %}
                     </tbody>
