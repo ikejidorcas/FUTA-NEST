@@ -533,11 +533,15 @@ display.addEventListener('input', function() {
     </div>
     <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
     <script>
-        window.addEventListener('load', function() {
-            const s = document.getElementById('wake-screen');
-            s.style.opacity = '0';
-            setTimeout(() => s.style.display = 'none', 500);
-        });
+        function hideWakeScreen() {
+    const s = document.getElementById('wake-screen');
+    if (s) {
+        s.style.opacity = '0';
+        setTimeout(() => s.style.display = 'none', 500);
+    }
+}
+window.addEventListener('load', hideWakeScreen);
+setTimeout(hideWakeScreen, 8000);
         const display = document.getElementById('price-display');
         const actual = document.getElementById('price-actual');
         display.addEventListener('input', function() {
