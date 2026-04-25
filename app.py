@@ -45,7 +45,7 @@ TERMII_API_KEY = os.getenv('TERMII_API_KEY')
 
 def send_otp(phone, code):
     """Send OTP via Termii SMS"""
-    url = "https://api.ng.termii.com/api/sms/send"
+    url = "https://v3.api.termii.com/api/sms/send"
     payload = {
         "to": phone,
         "from": "FUTANEST",
