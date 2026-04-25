@@ -90,6 +90,16 @@ def post_listing():
                 folder="futa-nest/videos"
             )
             video_url = video_upload.get('secure_url', '')
+            
+            # Handle ID upload to Cloudinary
+        id_file = request.files.get('agent_id')
+        agent_id_url = ''
+        if id_file and id_file.filename != '':
+            id_upload = cloudinary.uploader.upload(
+                id_file,
+                folder="futa-nest/ids"
+            )
+            agent_id_url = id_upload.get('secure_url', '')
 
         data = {
             "agent_name": request.form.get('agent_name'),
@@ -101,7 +111,9 @@ def post_listing():
             "price": int(request.form.get('price')),
             "image_url": image_url,
             "video_url": video_url,
+            "agent_id_url": agent_id_url,
             "approved": False
+            
         }
 
         response = supabase_request("POST", "listings", data=data)
@@ -172,15 +184,49 @@ def mark_taken(listing_id):
                      params={"id": f"eq.{listing_id}"})
     return render_template('taken.html')
 
-@app.route('/admin/taken/<listing_id>')
-def admin_mark_taken(listing_id):
-    if not session.get('admin'):
-        return redirect('/admin')
+@app.route('/taken/<listing_id>')
+def mark_taken(listing_id):
+    response = supabase_request("GET", "listings",
+                                params={"id": f"eq.{listing_id}"})
+    listing = response.json()[0] if response.json() else {}
+    
     supabase_request("PATCH", "listings",
                      data={"available": False},
                      params={"id": f"eq.{listing_id}"})
-    flash('Listing marked as taken!', 'success')
-    return redirect('/admin/dashboard')
+    
+    # Send WhatsApp notification to you
+    your_number = "2349050638087"
+    message = f"FUTA Nest Alert: '{listing.get('title', 'A listing')}' in {listing.get('area', '')} has been marked as TAKEN by agent {listing.get('agent_name', '')}."
+    whatsapp_url = f"https://wa.me/{your_number}?text={message}"
+    
+    return render_template('taken.html', whatsapp_url=whatsapp_url)
+
+@app.route('/report/<listing_id>', methods=['GET', 'POST'])
+def report_listing(listing_id):
+    if request.method == 'POST':
+        data = {
+            "listing_id": listing_id,
+            "reason": request.form.get('reason'),
+            "reporter_phone": request.form.get('reporter_phone', '')
+        }
+        supabase_request("POST", "reports", data=data)
+        flash('Report submitted! We will investigate immediately.', 'success')
+        return redirect('/listings')
+    
+    # Get listing details
+    response = supabase_request("GET", "listings",
+                                params={"id": f"eq.{listing_id}"})
+    listing = response.json()[0] if response.json() else {}
+    return render_template('report.html', listing=listing)
+
+@app.route('/admin/reports')
+def admin_reports():
+    if not session.get('admin'):
+        return redirect('/admin')
+    response = supabase_request("GET", "reports",
+                                params={"order": "created_at.desc"})
+    reports = response.json() if response.status_code == 200 else []
+    return render_template('admin_reports.html', reports=reports)
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port=8080)
