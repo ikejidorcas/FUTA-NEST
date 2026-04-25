@@ -44,20 +44,30 @@ def supabase_request(method, endpoint, data=None, params=None):
 TERMII_API_KEY = os.getenv('TERMII_API_KEY')
 
 def send_otp(phone, code):
-    """Send OTP via Termii SMS"""
-    url = "https://v3.api.termii.com/api/sms/send"
-    payload = {
-        "to": phone,
-        "from": "FUTANEST",
-        "sms": f"Your FUTA Nest verification code is: {code}. Valid for 10 minutes. Do not share this code.",
-        "type": "plain",
-        "api_key": TERMII_API_KEY,
-        "channel": "generic"
-    }
     try:
+        # Format phone number
+        if phone.startswith('0'):
+            phone = '234' + phone[1:]
+        
+        url = "https://v3.api.termii.com/api/sms/otp/send"
+        payload = {
+            "api_key": TERMII_API_KEY,
+            "message_type": "NUMERIC",
+            "to": phone,
+            "from": "N-Alert",
+            "channel": "dnd",
+            "pin_attempts": 3,
+            "pin_time_to_live": 10,
+            "pin_length": 6,
+            "pin_placeholder": "< 1234 >",
+            "message_text": "Your FUTA Nest verification code is < 1234 >. Valid for 10 minutes.",
+            "pin_type": "NUMERIC"
+        }
         response = requests.post(url, json=payload)
+        print("Termii OTP response:", response.status_code, response.text)
         return response.status_code == 200
-    except:
+    except Exception as e:
+        print("Termii error:", e)
         return False
 
 def generate_otp():
