@@ -348,9 +348,12 @@
                         <div class="listing-desc">{{ listing.description }}</div>
 
                         <div class="listing-meta">
-                            <strong>{{ listing.rooms }}</strong> Room(s) &nbsp;&bull;&nbsp;
-                            Agent: <strong>{{ listing.agent_name }}</strong>
-                        </div>
+    <strong>{{ listing.rooms }}</strong> Room(s) &nbsp;&bull;&nbsp;
+    Agent: <strong>{{ listing.agent_name }}</strong>
+    {% if listing.verified %}
+    <span style="background:#d1fae5;color:#065f46;border-radius:20px;padding:2px 8px;font-size:0.72rem;font-weight:700;margin-left:4px;">✓ Verified</span>
+    {% endif %}
+</div>
 
                         {% if listing.video_url %}
                         <a href="{{ listing.video_url }}" target="_blank" class="btn-video">

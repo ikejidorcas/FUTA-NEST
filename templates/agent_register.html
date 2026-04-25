@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FUTA Nest — Agent Registration</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: linear-gradient(135deg, #050d1f, #0a3d6b); min-height: 100vh; display: flex; flex-direction: column; }
+        .navbar { background-color: #050d1f; padding: 16px 40px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .brand-name { font-size: 1.5rem; font-weight: 900; letter-spacing: 3px; color: #4da6ff; text-decoration: none; text-transform: uppercase; }
+        .page-wrapper { flex: 1; display: flex; align-items: center; padding: 60px 0; }
+        .form-card { background: white; border-radius: 20px; padding: 40px; max-width: 480px; margin: 0 auto; width: 100%; box-shadow: 0 24px 80px rgba(0,0,0,0.4); }
+        .page-badge { display: inline-block; background: rgba(77,166,255,0.15); border: 1px solid rgba(77,166,255,0.3); color: #4da6ff; border-radius: 20px; padding: 6px 16px; font-size: 0.8rem; font-weight: 600; letter-spacing: 1px; margin-bottom: 14px; }
+        h2 { font-weight: 800; color: #050d1f; margin-bottom: 8px; }
+        .subtitle { color: #7a8ca0; font-size: 0.9rem; margin-bottom: 28px; line-height: 1.6; }
+        .form-label { font-weight: 600; font-size: 0.88rem; color: #2d3748; }
+        .form-control { border: 2px solid #e8edf5; border-radius: 10px; padding: 12px 14px; font-size: 0.95rem; }
+        .form-control:focus { border-color: #4da6ff; box-shadow: none; }
+        .btn-submit { background: linear-gradient(135deg, #1565c0, #1e88e5); color: white; border: none; border-radius: 12px; padding: 14px; font-weight: 700; font-size: 1rem; width: 100%; }
+        .btn-submit:hover { opacity: 0.9; color: white; }
+        .note { font-size: 0.8rem; color: #7a8ca0; text-align: center; margin-top: 12px; }
+        .alert-success { background: #e8f5e9; border: 1px solid #a5d6a7; color: #2e7d32; border-radius: 10px; padding: 14px 18px; font-weight: 500; margin-bottom: 20px; }
+        .alert-danger { background: #ffebee; border: 1px solid #ef9a9a; color: #c62828; border-radius: 10px; padding: 14px 18px; font-weight: 500; margin-bottom: 20px; }
+        .why-section { background: #f8faff; border-radius: 12px; padding: 16px; margin-bottom: 24px; border: 1px solid #e8edf5; }
+        .why-item { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; font-size: 0.85rem; color: #2d3748; }
+        .why-item:last-child { margin-bottom: 0; }
+        footer { background: #030810; color: #4a6080; padding: 24px 0; text-align: center; font-size: 0.88rem; }
+        footer span { color: #4da6ff; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <nav class="navbar d-flex justify-content-between align-items-center">
+        <a href="/" class="brand-name">FUTA NEST</a>
+        <a href="/listings" style="color:#8ab4d4;text-decoration:none;font-size:0.9rem;">View Listings</a>
+    </nav>
+
+    <div class="page-wrapper">
+        <div class="container">
+            <div class="form-card">
+                <div class="page-badge">FOR AGENTS</div>
+                <h2>Verify Your Number</h2>
+                <p class="subtitle">Enter your phone number to get started. We'll send you a one-time code to verify it's really you.</p>
+
+                <div class="why-section">
+                    <div class="why-item">🔒 Keeps fraudsters off the platform</div>
+                    <div class="why-item">✓ Students trust verified agents more</div>
+                    <div class="why-item">📱 Takes less than 1 minute</div>
+                </div>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                        <div class="alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Your Full Name</label>
+                        <input type="text" name="name" class="form-control"
+                               placeholder="e.g. Mr Adeleke" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Phone Number</label>
+                        <input type="text" name="phone" class="form-control"
+                               placeholder="e.g. 08012345678" required>
+                        <small class="text-muted">We will send an OTP to this number</small>
+                    </div>
+                    <button type="submit" class="btn-submit btn">Send OTP</button>
+                    <p class="note">Already verified? <a href="/post-listing" style="color:#1565c0;font-weight:600;">Go to Post Listing</a></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <span>FUTA NEST</span> &mdash; Built for FUTA Students &copy; 2025
+    </footer>
+</body>
+</html>
