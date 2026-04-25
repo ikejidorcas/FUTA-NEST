@@ -62,6 +62,9 @@
             <span class="admin-badge">ADMIN</span>
         </div>
         <a href="/admin/logout" class="btn-logout">Logout</a>
+        <a href="/admin/reports" style="color:#8ab4d4;text-decoration:none;font-size:0.85rem;margin-right:16px;">
+    View Reports
+</a>
     </nav>
 
     <div class="page-header">
@@ -108,6 +111,7 @@
             {% if pending %}
             <div class="table-responsive">
                 <table>
+                    
                     <thead>
                         <tr>
                             <th>Listing</th>
@@ -116,6 +120,7 @@
                             <th>Area</th>
                             <th>Price</th>
                             <th>Actions</th>
+  
                         </tr>
                     </thead>
                     <tbody>
@@ -133,6 +138,12 @@
                                 <a href="/admin/approve/{{ listing.id }}" class="btn-approve me-1">Approve</a>
                                 <a href="/admin/delete/{{ listing.id }}" class="btn-delete"
                                    onclick="return confirm('Delete this listing?')">Delete</a>
+                                   {% if listing.agent_id_url %}
+<a href="{{ listing.agent_id_url }}" target="_blank" class="btn-approve me-1"
+   style="background:linear-gradient(135deg,#10b981,#059669);">View ID</a>
+{% else %}
+<span style="color:#dc3545;font-size:0.78rem;font-weight:600;">No ID</span>
+{% endif %}
                             </td>
                         </tr>
                         {% endfor %}
@@ -144,14 +155,7 @@
                 <p>No pending listings — you are all caught up!</p>
             </div>
             {% endif %}
-            {% if listing.agent_id_url %}
-<a href="{{ listing.agent_id_url }}" target="_blank" class="btn-approve me-1"
-   style="background:linear-gradient(135deg,#10b981,#059669);">View ID</a>
-{% else %}
-<span style="color:#dc3545;font-size:0.78rem;font-weight:600;">No ID</span>
-{% endif %}
         </div>
-        
 
         <!-- All Listings -->
         <div class="section-card">
@@ -188,23 +192,24 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {% if not listing.approved %}
                                 <a href="/admin/approve/{{ listing.id }}" class="btn-approve me-1">Approve</a>
-                                {% endif %}
-                                {% if listing.available %}
-                                <a href="/admin/taken/{{ listing.id }}" class="btn-taken me-1"
-                                   onclick="return confirm('Mark as taken?')">Taken</a>
-                                {% endif %}
-                                <a href="/admin/delete/{{ listing.id }}" class="btn-delete"
-                                   onclick="return confirm('Are you sure?')">Delete</a>
-                                   <a href="/admin/taken/{{ listing.id }}" class="btn-taken me-1"
-                                <a href="/admin/reports" style="color:#8ab4d4;text-decoration:none;font-size:0.85rem;margin-right:16px;">
-    View Reports
-</a>
+
+{% if listing.available %}
+<a href="/admin/taken/{{ listing.id }}" class="btn-taken me-1"
    onclick="return confirm('Mark as taken?')">Taken</a>
+{% endif %}
+
+<a href="/admin/delete/{{ listing.id }}" class="btn-delete"
+   onclick="return confirm('Are you sure?')">Delete</a>
+
+<a href="/admin/reports"
+   style="color:#8ab4d4;text-decoration:none;font-size:0.85rem;margin-right:16px;">
+   View Reports
+</a>
+
 <button onclick="navigator.clipboard.writeText('https://futa-nest.onrender.com/taken/{{ listing.id }}'); alert('Agent link copied!')" 
    class="btn-approve me-1" style="border:none;cursor:pointer;">
-   Copy Agent Link
+   Copy Agent Link        
 </button>
                             </td>
                         </tr>
