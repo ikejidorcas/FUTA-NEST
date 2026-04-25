@@ -177,12 +177,6 @@ def admin_logout():
     session.pop('admin', None)
     return redirect('/')
 
-@app.route('/taken/<listing_id>')
-def mark_taken(listing_id):
-    supabase_request("PATCH", "listings",
-                     data={"available": False},
-                     params={"id": f"eq.{listing_id}"})
-    return render_template('taken.html')
 
 @app.route('/taken/<listing_id>')
 def mark_taken(listing_id):
