@@ -19,11 +19,10 @@ SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
 TERMII_API_KEY = os.getenv('TERMII_API_KEY')
 
-# Cloudinary config
 cloudinary.config(
-    cloud_name="da6gxwgjq",
-    api_key="593233257222916",
-    api_secret="XZCJn5dh6jnFAr1-pgz2J1ntLzQ"
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME', 'da6gxwgjq'),
+    api_key=os.getenv('CLOUDINARY_API_KEY', '593233257222916'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET', 'XZCJn5dh6jnFAr1-pgz2J1ntLzQ')
 )
 
 def supabase_request(method, endpoint, data=None, params=None):
