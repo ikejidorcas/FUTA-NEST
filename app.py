@@ -54,7 +54,7 @@ def send_otp(phone, code):
             "api_key": TERMII_API_KEY,
             "message_type": "NUMERIC",
             "to": phone,
-            "from": "FUTANEST",
+            "from": "Termii",
             "channel": "generic",
             "pin_attempts": 3,
             "pin_time_to_live": 10,
