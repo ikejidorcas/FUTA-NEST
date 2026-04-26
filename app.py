@@ -214,11 +214,14 @@ def agent_logout():
 # ── POST LISTING PAGE ────────────────────────────────────────────
 @app.route('/post-listing', methods=['GET', 'POST'])
 def post_listing():
-    if not session.get('agent_phone'):
+    
+    if not session.get('agent_phone') and not session.get('admin'):
         flash('Please verify your phone number first to post a listing.', 'danger')
         return redirect('/agent/register')
 
-    phone = session.get('agent_phone')
+    phone = session.get('agent_phone') or 'admin'
+
+    
 
     blocked_check = supabase_request("GET", "agents",
                                      params={"phone": f"eq.{phone}",
