@@ -2,14 +2,13 @@
 <html lang="en">
 <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BNGWXVNRNC"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-BNGWXVNRNC');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BNGWXVNRNC"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-BNGWXVNRNC');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FUTA Nest — Post a Listing</title>
@@ -17,13 +16,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
         * { font-family: 'Inter', sans-serif; }
-
         body {
             margin: 0;
             min-height: 100vh;
             background: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1600&q=80') center/cover no-repeat fixed;
         }
-
         body::before {
             content: '';
             position: fixed;
@@ -31,7 +28,6 @@
             background: rgba(5, 13, 31, 0.82);
             z-index: 0;
         }
-
         .navbar {
             background-color: #050d1f;
             padding: 16px 40px;
@@ -40,7 +36,6 @@
             z-index: 1000;
             border-bottom: 1px solid rgba(255,255,255,0.06);
         }
-
         .brand-name {
             font-size: 1.5rem;
             font-weight: 900;
@@ -49,7 +44,6 @@
             text-decoration: none;
             text-transform: uppercase;
         }
-
         .btn-view {
             background: transparent;
             color: #8ab4d4;
@@ -61,23 +55,13 @@
             text-decoration: none;
             transition: all 0.2s;
         }
-
-        .btn-view:hover {
-            border-color: #4da6ff;
-            color: #4da6ff;
-        }
-
+        .btn-view:hover { border-color: #4da6ff; color: #4da6ff; }
         .page-wrapper {
             position: relative;
             z-index: 1;
             padding: 50px 0 60px;
         }
-
-        .page-header {
-            text-align: center;
-            margin-bottom: 36px;
-        }
-
+        .page-header { text-align: center; margin-bottom: 36px; }
         .page-badge {
             display: inline-block;
             background: rgba(77,166,255,0.15);
@@ -90,19 +74,8 @@
             letter-spacing: 1px;
             margin-bottom: 14px;
         }
-
-        .page-title {
-            font-size: 2.2rem;
-            font-weight: 800;
-            color: white;
-            margin-bottom: 10px;
-        }
-
-        .page-subtitle {
-            color: #8ab4d4;
-            font-size: 1rem;
-        }
-
+        .page-title { font-size: 2.2rem; font-weight: 800; color: white; margin-bottom: 10px; }
+        .page-subtitle { color: #8ab4d4; font-size: 1rem; }
         .form-card {
             background: white;
             border-radius: 20px;
@@ -111,7 +84,6 @@
             margin: 0 auto;
             box-shadow: 0 24px 80px rgba(0,0,0,0.4);
         }
-
         .section-divider {
             font-size: 0.75rem;
             font-weight: 700;
@@ -123,16 +95,8 @@
             margin-bottom: 20px;
             margin-top: 8px;
         }
-
-        .form-label {
-            font-weight: 600;
-            font-size: 0.88rem;
-            color: #2d3748;
-            margin-bottom: 6px;
-        }
-
-        .form-control,
-        .form-select {
+        .form-label { font-weight: 600; font-size: 0.88rem; color: #2d3748; margin-bottom: 6px; }
+        .form-control, .form-select {
             border: 2px solid #e8edf5;
             border-radius: 10px;
             padding: 11px 14px;
@@ -140,17 +104,12 @@
             color: #050d1f;
             transition: border-color 0.2s;
         }
-
-        .form-control:focus,
-        .form-select:focus {
+        .form-control:focus, .form-select:focus {
             border-color: #4da6ff;
             box-shadow: 0 0 0 3px rgba(77,166,255,0.1);
         }
-
         .form-control::placeholder { color: #b0bec5; }
-
         textarea.form-control { resize: vertical; min-height: 100px; }
-
         .upload-box {
             border: 2px dashed #c8d9f5;
             border-radius: 10px;
@@ -160,11 +119,8 @@
             transition: border-color 0.2s;
             cursor: pointer;
         }
-
         .upload-box:hover { border-color: #4da6ff; }
-
         .upload-box input { display: none; }
-
         .upload-icon {
             width: 40px;
             height: 40px;
@@ -175,33 +131,10 @@
             justify-content: center;
             margin: 0 auto 10px;
         }
-
-        .upload-icon svg {
-            width: 20px;
-            height: 20px;
-            stroke: #1565c0;
-            fill: none;
-        }
-
-        .upload-label {
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #1565c0;
-            margin-bottom: 4px;
-        }
-
-        .upload-hint {
-            font-size: 0.8rem;
-            color: #7a8ca0;
-        }
-
-        .upload-filename {
-            font-size: 0.82rem;
-            color: #1565c0;
-            margin-top: 8px;
-            font-weight: 500;
-        }
-
+        .upload-icon svg { width: 20px; height: 20px; stroke: #1565c0; fill: none; }
+        .upload-label { font-weight: 600; font-size: 0.9rem; color: #1565c0; margin-bottom: 4px; }
+        .upload-hint { font-size: 0.8rem; color: #7a8ca0; }
+        .upload-filename { font-size: 0.82rem; color: #1565c0; margin-top: 8px; font-weight: 500; }
         .alert-success {
             background: #e8f5e9;
             border: 1px solid #a5d6a7;
@@ -210,7 +143,6 @@
             padding: 14px 18px;
             font-weight: 500;
         }
-
         .alert-danger {
             background: #ffebee;
             border: 1px solid #ef9a9a;
@@ -219,7 +151,6 @@
             padding: 14px 18px;
             font-weight: 500;
         }
-
         .btn-submit {
             background: linear-gradient(135deg, #1565c0, #1e88e5);
             color: white;
@@ -232,16 +163,17 @@
             letter-spacing: 0.5px;
             transition: opacity 0.2s;
         }
-
         .btn-submit:hover { opacity: 0.9; color: white; }
-
-        .submit-note {
-            text-align: center;
-            font-size: 0.82rem;
-            color: #7a8ca0;
-            margin-top: 12px;
+        .submit-note { text-align: center; font-size: 0.82rem; color: #7a8ca0; margin-top: 12px; }
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            color: #856404;
+            margin-bottom: 20px;
         }
-
         footer {
             background: #030810;
             color: #4a6080;
@@ -251,13 +183,11 @@
             position: relative;
             z-index: 1;
         }
-
         footer span { color: #4da6ff; font-weight: 700; }
     </style>
 </head>
 <body>
 
-    <!-- Navbar -->
     <nav class="navbar d-flex justify-content-between align-items-center">
         <a href="/" class="brand-name">FUTA NEST</a>
         <a href="/listings" class="btn-view">View Listings</a>
@@ -266,14 +196,12 @@
     <div class="page-wrapper">
         <div class="container">
 
-            <!-- Page Header -->
             <div class="page-header">
                 <div class="page-badge">FOR AGENTS</div>
                 <h1 class="page-title">Post a House Listing</h1>
                 <p class="page-subtitle">Fill in the details below — students will contact you directly</p>
             </div>
 
-            <!-- Flash Messages -->
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     <div style="max-width:720px; margin: 0 auto 20px;">
@@ -284,17 +212,28 @@
                 {% endif %}
             {% endwith %}
 
-            <!-- Form -->
             <div class="form-card">
+
+                <div class="warning-box">
+                    ⚠️ <strong>Important:</strong> Your phone number will be visible to students on your listing. Only post genuine available houses. Fraudulent listings will be removed and your number reported.
+                </div>
+
                 <form action="/post-listing" method="POST" enctype="multipart/form-data">
 
                     <!-- Agent Info -->
-                    <div class="section-divider">Agent Information</div>
-                    <div style="background:#f8faff;border-radius:10px;padding:16px;margin-bottom:20px;border:1px solid #e8edf5;">
-                        <div style="font-size:0.85rem;color:#7a8ca0;margin-bottom:4px;">Posting as</div>
-                        <div style="font-weight:700;color:#050d1f;font-size:1rem;">{{ agent_name }}</div>
-                        <div style="color:#1565c0;font-size:0.88rem;">{{ agent_phone }}</div>
-                        <a href="/agent/logout" style="color:#dc3545;font-size:0.8rem;text-decoration:none;">Not you? Switch account</a>
+                    <div class="section-divider">Your Information</div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" name="agent_name" class="form-control"
+                                   placeholder="e.g. Mr Adeleke" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Phone Number</label>
+                            <input type="text" name="phone" class="form-control"
+                                   placeholder="e.g. 08012345678" required>
+                            <small class="text-muted">This will be visible to students</small>
+                        </div>
                     </div>
 
                     <!-- House Info -->
@@ -307,7 +246,7 @@
                     <div class="mb-3">
                         <label class="form-label">Description</label>
                         <textarea name="description" class="form-control"
-                                  placeholder="Describe the house — facilities, condition, nearby landmarks..."></textarea>
+                                  placeholder="Describe the house — facilities, condition, nearby landmarks, amenities..."></textarea>
                     </div>
                     <div class="row">
                         <div class="col-md-4 mb-3">
@@ -321,13 +260,15 @@
                             </select>
                         </div>
                         <div class="col-md-4 mb-3">
-                            <label class="form-label">Number of Rooms</label>
+                            <label class="form-label">Type of Apartment</label>
                             <select name="rooms" class="form-select" required>
                                 <option value="">-- Select --</option>
-                                <option value="1">1 Room (Self Contain)</option>
-                                <option value="2">2 Bedrooms</option>
-                                <option value="3">3 Bedrooms</option>
-                                <option value="4">4 Bedrooms</option>
+                                <option value="1">Single Room</option>
+                                <option value="1">Self Contain</option>
+                                <option value="2">Mini Flat (1 Bedroom)</option>
+                                <option value="2">2 Bedroom Flat</option>
+                                <option value="3">3 Bedroom Flat</option>
+                                <option value="4">4 Bedroom Flat</option>
                             </select>
                         </div>
                         <div class="col-md-4 mb-3">
@@ -377,6 +318,7 @@
                     </button>
                     <p class="submit-note">
                         Your listing will be reviewed and approved before students can see it.
+                        Want more trust? <a href="/verify" style="color:#1565c0;font-weight:600;">Get a Verified Badge →</a>
                     </p>
 
                 </form>
