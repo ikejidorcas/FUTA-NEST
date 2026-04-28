@@ -4,18 +4,18 @@ import os
 import requests
 import cloudinary
 import cloudinary.uploader
-
+import random
+import string
+from datetime import datetime, timedelta
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-key-change-later')
 
-# Supabase config
 SUPABASE_URL = os.getenv('SUPABASE_URL')
 SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
-TERMII_API_KEY = os.getenv('TERMII_API_KEY')
 
 cloudinary.config(
     cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME', 'da6gxwgjq'),
@@ -40,10 +40,6 @@ def supabase_request(method, endpoint, data=None, params=None):
     elif method == "DELETE":
         response = requests.delete(url, headers=headers, params=params)
     return response
-
-
-
-
 
 # ── HOME PAGE ────────────────────────────────────────────────────
 @app.route('/')
@@ -70,65 +66,89 @@ def listings():
                            area=area,
                            max_price=max_price)
 
-
-
-# ── AGENT LOGOUT ─────────────────────────────────────────────────
-@app.route('/agent/logout')
-def agent_logout():
-    session.pop('agent_phone', None)
-    session.pop('agent_name', None)
-    return redirect('/')
-
+# ── POST LISTING ─────────────────────────────────────────────────
 @app.route('/post-listing', methods=['GET', 'POST'])
 def post_listing():
-
     if request.method == 'POST':
         image_url = ''
         video_url = ''
 
-        # Get form data directly (no session)
         agent_name = request.form.get('agent_name')
-        phone = request.form.get('phone')
+        phone = request.form.get('phone', '').strip().replace(' ', '')
 
-        # Optional: basic validation
         if not agent_name or not phone:
             flash('Name and phone number are required.', 'danger')
             return redirect('/post-listing')
 
-        # Check if agent is blocked (optional safety)
-        blocked_check = supabase_request(
-            "GET",
-            "agents",
-            params={
-                "phone": f"eq.{phone}",
-                "blocked": "eq.true"
-            }
-        )
+        # Format phone number
+        if phone.startswith('0'):
+            phone = '234' + phone[1:]
 
+        # Check if agent is blocked
+        blocked_check = supabase_request("GET", "agents",
+                                         params={"phone": f"eq.{phone}",
+                                                 "blocked": "eq.true"})
         if blocked_check.json():
-            flash('Your account has been blocked. Contact admin.', 'danger')
+            flash('Your number has been blocked from FUTA Nest. Contact admin if this is a mistake.', 'danger')
             return redirect('/')
+
+        # Check listing limit — max 3 active listings per phone
+        existing_listings = supabase_request("GET", "listings",
+                                             params={"phone": f"eq.{phone}",
+                                                     "available": "eq.true"})
+        if existing_listings.json() and len(existing_listings.json()) >= 3:
+            flash('You already have 3 active listings. Please mark a house as taken before posting a new one.', 'danger')
+            return redirect('/post-listing')
+
+        price = int(request.form.get('price', 0))
+
+        # Price validation
+        if price < 30000:
+            flash('Price seems too low. Minimum price is ₦30,000/year. Please check and resubmit.', 'danger')
+            return redirect('/post-listing')
+        if price > 2000000:
+            flash('Price seems unusually high. Please contact admin if this is correct.', 'danger')
+            return redirect('/post-listing')
+
+        # Check for duplicate listing
+        duplicate_check = supabase_request("GET", "listings",
+                                           params={"phone": f"eq.{phone}",
+                                                   "area": f"eq.{request.form.get('area')}",
+                                                   "price": f"eq.{price}",
+                                                   "available": "eq.true"})
+        if duplicate_check.json():
+            flash('You already have a listing with the same area and price. Please check your existing listings.', 'danger')
+            return redirect('/post-listing')
+
+        # Auto flag suspicious listings
+        flagged = price < 50000 or price > 1000000
 
         # Upload image
         image_file = request.files.get('image')
         if image_file and image_file.filename != '':
             image_upload = cloudinary.uploader.upload(
-                image_file,
-                folder="futa-nest/images"
-            )
+                image_file, folder="futa-nest/images")
             image_url = image_upload.get('secure_url', '')
 
         # Upload video
         video_file = request.files.get('video')
         if video_file and video_file.filename != '':
             video_upload = cloudinary.uploader.upload(
-                video_file,
-                resource_type="video",
-                folder="futa-nest/videos"
-            )
+                video_file, resource_type="video", folder="futa-nest/videos")
             video_url = video_upload.get('secure_url', '')
 
-        # Prepare data
+        # Register agent if not existing
+        existing_agent = supabase_request("GET", "agents",
+                                          params={"phone": f"eq.{phone}"})
+        if not existing_agent.json():
+            supabase_request("POST", "agents", data={
+                "phone": phone,
+                "name": agent_name,
+                "verified": False,
+                "flagged": False,
+                "blocked": False
+            })
+
         data = {
             "agent_name": agent_name,
             "phone": phone,
@@ -136,27 +156,67 @@ def post_listing():
             "description": request.form.get('description'),
             "area": request.form.get('area'),
             "rooms": int(request.form.get('rooms')),
-            "price": int(request.form.get('price')),
+            "price": price,
             "image_url": image_url,
             "video_url": video_url,
             "approved": False,
             "available": True,
             "featured": False,
             "verified": False,
+            "flagged": flagged,
             "agent_phone_ref": phone
         }
 
-        # Save to database
         response = supabase_request("POST", "listings", data=data)
-
         if response.status_code == 201:
             flash('Listing submitted! It will appear after admin approval.', 'success')
         else:
             flash(f'Error: {response.text}', 'danger')
-
         return redirect('/post-listing')
 
     return render_template('post_listing.html')
+
+# ── AGENT REGISTER ───────────────────────────────────────────────
+@app.route('/agent/register', methods=['GET', 'POST'])
+def agent_register():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        phone = request.form.get('phone', '').strip().replace(' ', '')
+
+        if phone.startswith('0'):
+            phone = '234' + phone[1:]
+
+        blocked_check = supabase_request("GET", "agents",
+                                         params={"phone": f"eq.{phone}",
+                                                 "blocked": "eq.true"})
+        if blocked_check.json():
+            flash('This number has been blocked from FUTA Nest.', 'danger')
+            return redirect('/agent/register')
+
+        existing = supabase_request("GET", "agents",
+                                    params={"phone": f"eq.{phone}"})
+        if not existing.json():
+            supabase_request("POST", "agents", data={
+                "phone": phone,
+                "name": name,
+                "verified": False,
+                "flagged": False,
+                "blocked": False
+            })
+
+        session['agent_phone'] = phone
+        session['agent_name'] = name
+        flash(f'Welcome {name}! You can now post your listing.', 'success')
+        return redirect('/post-listing')
+
+    return render_template('agent_register.html')
+
+# ── AGENT LOGOUT ─────────────────────────────────────────────────
+@app.route('/agent/logout')
+def agent_logout():
+    session.pop('agent_phone', None)
+    session.pop('agent_name', None)
+    return redirect('/')
 
 # ── REPORT LISTING ───────────────────────────────────────────────
 @app.route('/report/<listing_id>', methods=['GET', 'POST'])
@@ -190,7 +250,6 @@ def mark_taken(listing_id):
     your_number = "2349050638087"
     message = f"FUTA Nest Alert: '{listing.get('title', 'A listing')}' in {listing.get('area', '')} has been marked as TAKEN by agent {listing.get('agent_name', '')}."
     whatsapp_url = f"https://wa.me/{your_number}?text={message}"
-
     return render_template('taken.html', whatsapp_url=whatsapp_url)
 
 # ── FEATURE PAGE ─────────────────────────────────────────────────
@@ -315,9 +374,42 @@ def admin_agents():
     agents = response.json() if response.status_code == 200 else []
     return render_template('admin_agents.html', agents=agents)
 
+# ── FLAG AGENT ────────────────────────────────────────────────────
+@app.route('/admin/flag/<phone>')
+def flag_agent(phone):
+    if not session.get('admin'):
+        return redirect('/admin')
+    reason = request.args.get('reason', 'Flagged by admin')
+    supabase_request("PATCH", "agents",
+                     data={"flagged": True, "flag_reason": reason},
+                     params={"phone": f"eq.{phone}"})
+    flash(f'Agent {phone} has been flagged!', 'success')
+    return redirect('/admin/agents')
 
+# ── BLOCK AGENT ───────────────────────────────────────────────────
+@app.route('/admin/block/<phone>')
+def block_agent(phone):
+    if not session.get('admin'):
+        return redirect('/admin')
+    supabase_request("PATCH", "agents",
+                     data={"blocked": True, "flagged": True},
+                     params={"phone": f"eq.{phone}"})
+    supabase_request("PATCH", "listings",
+                     data={"approved": False, "available": False},
+                     params={"phone": f"eq.{phone}"})
+    flash(f'Agent {phone} blocked and listings removed!', 'success')
+    return redirect('/admin/agents')
 
-
+# ── UNBLOCK AGENT ─────────────────────────────────────────────────
+@app.route('/admin/unblock/<phone>')
+def unblock_agent(phone):
+    if not session.get('admin'):
+        return redirect('/admin')
+    supabase_request("PATCH", "agents",
+                     data={"blocked": False, "flagged": False, "flag_reason": None},
+                     params={"phone": f"eq.{phone}"})
+    flash(f'Agent {phone} has been unblocked!', 'success')
+    return redirect('/admin/agents')
 
 # ── ADMIN VERIFICATIONS ───────────────────────────────────────────
 @app.route('/admin/verifications')
@@ -329,7 +421,19 @@ def admin_verifications():
     verifications = response.json() if response.status_code == 200 else []
     return render_template('admin_verifications.html', verifications=verifications)
 
-
+# ── VERIFY AGENT APPROVE ──────────────────────────────────────────
+@app.route('/admin/verify-agent/<verification_id>/<phone>')
+def verify_agent_approve(verification_id, phone):
+    if not session.get('admin'):
+        return redirect('/admin')
+    supabase_request("PATCH", "verifications",
+                     data={"verified": True},
+                     params={"id": f"eq.{verification_id}"})
+    supabase_request("PATCH", "listings",
+                     data={"verified": True},
+                     params={"phone": f"eq.{phone}"})
+    flash('Agent verified! All their listings now show verified badge.', 'success')
+    return redirect('/admin/verifications')
 
 # ── ADMIN LOGOUT ─────────────────────────────────────────────────
 @app.route('/admin/logout')

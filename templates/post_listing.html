@@ -290,17 +290,11 @@
 
                     <!-- Agent Info -->
                     <div class="section-divider">Agent Information</div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Full Name</label>
-                            <input type="text" name="agent_name" class="form-control"
-                                   placeholder="e.g. Mr Adeleke" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Phone Number (with country code)</label>
-                            <input type="text" name="phone" class="form-control"
-                                   placeholder="e.g. 2348012345678" required>
-                        </div>
+                    <div style="background:#f8faff;border-radius:10px;padding:16px;margin-bottom:20px;border:1px solid #e8edf5;">
+                        <div style="font-size:0.85rem;color:#7a8ca0;margin-bottom:4px;">Posting as</div>
+                        <div style="font-weight:700;color:#050d1f;font-size:1rem;">{{ agent_name }}</div>
+                        <div style="color:#1565c0;font-size:0.88rem;">{{ agent_phone }}</div>
+                        <a href="/agent/logout" style="color:#dc3545;font-size:0.8rem;text-decoration:none;">Not you? Switch account</a>
                     </div>
 
                     <!-- House Info -->
