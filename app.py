@@ -4,9 +4,7 @@ import os
 import requests
 import cloudinary
 import cloudinary.uploader
-import random
-import string
-from datetime import datetime, timedelta
+
 
 load_dotenv()
 
@@ -43,28 +41,9 @@ def supabase_request(method, endpoint, data=None, params=None):
         response = requests.delete(url, headers=headers, params=params)
     return response
 
-def generate_otp():
-    return ''.join(random.choices(string.digits, k=6))
 
-def send_otp(phone, code):
-    try:
-        if phone.startswith('0'):
-            phone = '234' + phone[1:]
-        url = "https://v3.api.termii.com/api/sms/send"
-        payload = {
-            "api_key": TERMII_API_KEY,
-            "to": phone,
-            "from": "FUTANEST",
-            "sms": f"Your FUTA Nest verification code is: {code}. Valid for 10 minutes. Do not share.",
-            "type": "plain",
-            "channel": "generic"
-        }
-        response = requests.post(url, json=payload)
-        print("Termii response:", response.status_code, response.text)
-        return response.status_code == 200
-    except Exception as e:
-        print("Termii error:", e)
-        return False
+
+
 
 # ── HOME PAGE ────────────────────────────────────────────────────
 @app.route('/')
@@ -100,43 +79,58 @@ def agent_logout():
     session.pop('agent_name', None)
     return redirect('/')
 
-# ── POST LISTING PAGE ────────────────────────────────────────────
 @app.route('/post-listing', methods=['GET', 'POST'])
 def post_listing():
-    
-    if not session.get('agent_phone') and not session.get('admin'):
-        flash('Please verify your phone number first to post a listing.', 'danger')
-        return redirect('/agent/register')
-
-    phone = session.get('agent_phone') or 'admin'
-
-    
-
-    blocked_check = supabase_request("GET", "agents",
-                                     params={"phone": f"eq.{phone}",
-                                             "blocked": "eq.true"})
-    if blocked_check.json():
-        flash('Your account has been blocked. Contact admin for support.', 'danger')
-        return redirect('/')
 
     if request.method == 'POST':
         image_url = ''
         video_url = ''
 
+        # Get form data directly (no session)
+        agent_name = request.form.get('agent_name')
+        phone = request.form.get('phone')
+
+        # Optional: basic validation
+        if not agent_name or not phone:
+            flash('Name and phone number are required.', 'danger')
+            return redirect('/post-listing')
+
+        # Check if agent is blocked (optional safety)
+        blocked_check = supabase_request(
+            "GET",
+            "agents",
+            params={
+                "phone": f"eq.{phone}",
+                "blocked": "eq.true"
+            }
+        )
+
+        if blocked_check.json():
+            flash('Your account has been blocked. Contact admin.', 'danger')
+            return redirect('/')
+
+        # Upload image
         image_file = request.files.get('image')
         if image_file and image_file.filename != '':
             image_upload = cloudinary.uploader.upload(
-                image_file, folder="futa-nest/images")
+                image_file,
+                folder="futa-nest/images"
+            )
             image_url = image_upload.get('secure_url', '')
 
+        # Upload video
         video_file = request.files.get('video')
         if video_file and video_file.filename != '':
             video_upload = cloudinary.uploader.upload(
-                video_file, resource_type="video", folder="futa-nest/videos")
+                video_file,
+                resource_type="video",
+                folder="futa-nest/videos"
+            )
             video_url = video_upload.get('secure_url', '')
 
+        # Prepare data
         data = {
-            "agent_name": session.get('agent_name'),
+            "agent_name": agent_name,
             "phone": phone,
             "title": request.form.get('title'),
             "description": request.form.get('description'),
@@ -152,16 +146,17 @@ def post_listing():
             "agent_phone_ref": phone
         }
 
+        # Save to database
         response = supabase_request("POST", "listings", data=data)
+
         if response.status_code == 201:
             flash('Listing submitted! It will appear after admin approval.', 'success')
         else:
             flash(f'Error: {response.text}', 'danger')
+
         return redirect('/post-listing')
 
-    return render_template('post_listing.html',
-                           agent_name=session.get('agent_name'),
-                           agent_phone=phone)
+    return render_template('post_listing.html')
 
 # ── REPORT LISTING ───────────────────────────────────────────────
 @app.route('/report/<listing_id>', methods=['GET', 'POST'])
@@ -320,42 +315,9 @@ def admin_agents():
     agents = response.json() if response.status_code == 200 else []
     return render_template('admin_agents.html', agents=agents)
 
-# ── FLAG AGENT ────────────────────────────────────────────────────
-@app.route('/admin/flag/<phone>')
-def flag_agent(phone):
-    if not session.get('admin'):
-        return redirect('/admin')
-    reason = request.args.get('reason', 'Flagged by admin')
-    supabase_request("PATCH", "agents",
-                     data={"flagged": True, "flag_reason": reason},
-                     params={"phone": f"eq.{phone}"})
-    flash(f'Agent {phone} has been flagged!', 'success')
-    return redirect('/admin/agents')
 
-# ── BLOCK AGENT ───────────────────────────────────────────────────
-@app.route('/admin/block/<phone>')
-def block_agent(phone):
-    if not session.get('admin'):
-        return redirect('/admin')
-    supabase_request("PATCH", "agents",
-                     data={"blocked": True, "flagged": True},
-                     params={"phone": f"eq.{phone}"})
-    supabase_request("PATCH", "listings",
-                     data={"approved": False, "available": False},
-                     params={"phone": f"eq.{phone}"})
-    flash(f'Agent {phone} blocked and listings removed!', 'success')
-    return redirect('/admin/agents')
 
-# ── UNBLOCK AGENT ─────────────────────────────────────────────────
-@app.route('/admin/unblock/<phone>')
-def unblock_agent(phone):
-    if not session.get('admin'):
-        return redirect('/admin')
-    supabase_request("PATCH", "agents",
-                     data={"blocked": False, "flagged": False, "flag_reason": None},
-                     params={"phone": f"eq.{phone}"})
-    flash(f'Agent {phone} has been unblocked!', 'success')
-    return redirect('/admin/agents')
+
 
 # ── ADMIN VERIFICATIONS ───────────────────────────────────────────
 @app.route('/admin/verifications')
@@ -367,19 +329,7 @@ def admin_verifications():
     verifications = response.json() if response.status_code == 200 else []
     return render_template('admin_verifications.html', verifications=verifications)
 
-# ── VERIFY AGENT APPROVE ──────────────────────────────────────────
-@app.route('/admin/verify-agent/<verification_id>/<phone>')
-def verify_agent_approve(verification_id, phone):
-    if not session.get('admin'):
-        return redirect('/admin')
-    supabase_request("PATCH", "verifications",
-                     data={"verified": True},
-                     params={"id": f"eq.{verification_id}"})
-    supabase_request("PATCH", "listings",
-                     data={"verified": True},
-                     params={"phone": f"eq.{phone}"})
-    flash('Agent verified! All their listings now show verified badge.', 'success')
-    return redirect('/admin/verifications')
+
 
 # ── ADMIN LOGOUT ─────────────────────────────────────────────────
 @app.route('/admin/logout')

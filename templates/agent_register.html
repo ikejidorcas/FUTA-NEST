@@ -42,7 +42,6 @@
             <div class="form-card">
                 <div class="page-badge">FOR AGENTS</div>
                 <h2>Verify Your Number</h2>
-                <button type="submit" class="btn-submit btn">Get Started →</button>
                 <p class="subtitle">Enter your name and phone number to start posting listings. Your number will be visible to students so they can contact you directly.</p>
 </div>
 
@@ -53,21 +52,23 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
+                <div class="form-card">
+                    <div class="page-badge">FOR AGENTS</div>
+                    <h2>Verify Your Number</h2>
+                    <p class="subtitle">...</p>
 
-                <form method="POST">
-                    <div class="mb-3">
-                        <label class="form-label">Your Full Name</label>
-                        <input type="text" name="name" class="form-control"
-                               placeholder="e.g. Mr Adeleke" required>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label">Phone Number</label>
-                        <input type="text" name="phone" class="form-control"
-                               placeholder="e.g. 08012345678" required>
-                        <button type="submit" class="btn-submit btn">Get Started →</button>
-                    </div>
-                    <p class="note">Already verified? <a href="/post-listing" style="color:#1565c0;font-weight:600;">Go to Post Listing</a></p>
-                </form>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                            <div class="alert-{{ category }}">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form method="POST">
+                        ...
+                    </form>
+                </div>
             </div>
         </div>
     </div>
