@@ -43,28 +43,7 @@ def supabase_request(method, endpoint, data=None, params=None):
         response = requests.delete(url, headers=headers, params=params)
     return response
 
-def generate_otp():
-    return ''.join(random.choices(string.digits, k=6))
 
-def send_otp(phone, code):
-    try:
-        if phone.startswith('0'):
-            phone = '234' + phone[1:]
-        url = "https://v3.api.termii.com/api/sms/send"
-        payload = {
-            "api_key": TERMII_API_KEY,
-            "to": phone,
-            "from": "FUTANEST",
-            "sms": f"Your FUTA Nest verification code is: {code}. Valid for 10 minutes. Do not share.",
-            "type": "plain",
-            "channel": "generic"
-        }
-        response = requests.post(url, json=payload)
-        print("Termii response:", response.status_code, response.text)
-        return response.status_code == 200
-    except Exception as e:
-        print("Termii error:", e)
-        return False
 
 # ── HOME PAGE ────────────────────────────────────────────────────
 @app.route('/')
@@ -91,124 +70,9 @@ def listings():
                            area=area,
                            max_price=max_price)
 
-# ── AGENT REGISTER ───────────────────────────────────────────────
-@app.route('/agent/register', methods=['GET', 'POST'])
-def agent_register():
-    if request.method == 'POST':
-        name = request.form.get('name')
-        phone = request.form.get('phone').strip().replace(' ', '')
 
-        if phone.startswith('0'):
-            phone = '234' + phone[1:]
 
-        # Check if agent is blocked
-        blocked_check = supabase_request("GET", "agents",
-                                         params={"phone": f"eq.{phone}",
-                                                 "blocked": "eq.true"})
-        if blocked_check.json():
-            flash('This number has been blocked from FUTA Nest.', 'danger')
-            return redirect('/agent/register')
 
-        # Generate OTP
-        code = generate_otp()
-        expires = (datetime.utcnow() + timedelta(minutes=10)).isoformat()
-
-        # Save OTP to database
-        supabase_request("POST", "otps", data={
-            "phone": phone,
-            "code": code,
-            "expires_at": expires,
-            "used": False
-        })
-
-        # Try sending OTP
-        sent = send_otp(phone, code)
-
-        session['pending_phone'] = phone
-        session['pending_name'] = name
-        session['otp_code'] = code
-
-        if sent:
-            flash(f'OTP sent to {phone}. Enter it below to verify.', 'success')
-        else:
-            flash(f'SMS temporarily unavailable. Your OTP is: {code}', 'warning')
-
-        return redirect('/agent/verify-otp')
-
-    return render_template('agent_register.html')
-
-# ── VERIFY OTP ───────────────────────────────────────────────────
-@app.route('/agent/verify-otp', methods=['GET', 'POST'])
-def agent_verify_otp():
-    if request.method == 'POST':
-        code = request.form.get('otp').strip()
-        phone = session.get('pending_phone')
-        name = session.get('pending_name')
-
-        if not phone:
-            return redirect('/agent/register')
-
-        # Check OTP in database
-        otp_check = supabase_request("GET", "otps",
-                                      params={"phone": f"eq.{phone}",
-                                              "code": f"eq.{code}",
-                                              "used": "eq.false",
-                                              "order": "created_at.desc",
-                                              "limit": "1"})
-
-        otps = otp_check.json()
-
-        if not otps:
-            flash('Invalid OTP. Please try again.', 'danger')
-            return redirect('/agent/verify-otp')
-
-        otp = otps[0]
-
-        # Check if expired
-        expires_at = datetime.fromisoformat(otp['expires_at'].replace('Z', '').split('.')[0])
-        if datetime.utcnow() > expires_at:
-            flash('OTP has expired. Please request a new one.', 'danger')
-            return redirect('/agent/register')
-
-        # Mark OTP as used
-        supabase_request("PATCH", "otps",
-                         data={"used": True},
-                         params={"id": f"eq.{otp['id']}"})
-
-        # Create or update agent account
-        existing = supabase_request("GET", "agents",
-                                     params={"phone": f"eq.{phone}"})
-
-        if not existing.json():
-            supabase_request("POST", "agents", data={
-                "phone": phone,
-                "name": name,
-                "verified": True,
-                "flagged": False,
-                "blocked": False
-            })
-        else:
-            supabase_request("PATCH", "agents",
-                             data={"verified": True},
-                             params={"phone": f"eq.{phone}"})
-
-        session['agent_phone'] = phone
-        session['agent_name'] = name
-        session.pop('pending_phone', None)
-        session.pop('pending_name', None)
-        session.pop('otp_code', None)
-
-        flash('Phone verified! You can now post listings.', 'success')
-        return redirect('/post-listing')
-
-    return render_template('agent_verify_otp.html')
-
-# ── AGENT LOGOUT ─────────────────────────────────────────────────
-@app.route('/agent/logout')
-def agent_logout():
-    session.pop('agent_phone', None)
-    session.pop('agent_name', None)
-    return redirect('/')
 
 # ── POST LISTING PAGE ────────────────────────────────────────────
 @app.route('/post-listing', methods=['GET', 'POST'])
