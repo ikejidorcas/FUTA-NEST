@@ -43,7 +43,28 @@ def supabase_request(method, endpoint, data=None, params=None):
         response = requests.delete(url, headers=headers, params=params)
     return response
 
+def generate_otp():
+    return ''.join(random.choices(string.digits, k=6))
 
+def send_otp(phone, code):
+    try:
+        if phone.startswith('0'):
+            phone = '234' + phone[1:]
+        url = "https://v3.api.termii.com/api/sms/send"
+        payload = {
+            "api_key": TERMII_API_KEY,
+            "to": phone,
+            "from": "FUTANEST",
+            "sms": f"Your FUTA Nest verification code is: {code}. Valid for 10 minutes. Do not share.",
+            "type": "plain",
+            "channel": "generic"
+        }
+        response = requests.post(url, json=payload)
+        print("Termii response:", response.status_code, response.text)
+        return response.status_code == 200
+    except Exception as e:
+        print("Termii error:", e)
+        return False
 
 # ── HOME PAGE ────────────────────────────────────────────────────
 @app.route('/')
@@ -72,7 +93,12 @@ def listings():
 
 
 
-
+# ── AGENT LOGOUT ─────────────────────────────────────────────────
+@app.route('/agent/logout')
+def agent_logout():
+    session.pop('agent_phone', None)
+    session.pop('agent_name', None)
+    return redirect('/')
 
 # ── POST LISTING PAGE ────────────────────────────────────────────
 @app.route('/post-listing', methods=['GET', 'POST'])
