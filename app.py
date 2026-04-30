@@ -23,11 +23,14 @@ cloudinary.config(
     api_secret=os.getenv('CLOUDINARY_API_SECRET', 'XZCJn5dh6jnFAr1-pgz2J1ntLzQ')
 )
 
-def supabase_request(method, endpoint, data=None, params=None):
+SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_KEY')
+
+def supabase_request(method, endpoint, data=None, params=None, admin=False):
     url = f"{SUPABASE_URL}/rest/v1/{endpoint}"
+    key = SUPABASE_SERVICE_KEY if admin else SUPABASE_KEY
     headers = {
-        "apikey": SUPABASE_KEY,
-        "Authorization": f"Bearer {SUPABASE_KEY}",
+        "apikey": key,
+        "Authorization": f"Bearer {key}",
         "Content-Type": "application/json",
         "Prefer": "return=representation"
     }
@@ -292,89 +295,78 @@ def admin_login():
             flash('Wrong password!', 'danger')
     return render_template('admin_login.html')
 
-# ── ADMIN DASHBOARD ──────────────────────────────────────────────
 @app.route('/admin/dashboard')
 def admin_dashboard():
     if not session.get('admin'):
         return redirect('/admin')
-
     all_response = supabase_request("GET", "listings",
-                                    params={"order": "created_at.desc"})
+                                    params={"order": "created_at.desc"}, admin=True)
     pending_response = supabase_request("GET", "listings",
                                         params={"approved": "eq.false",
-                                                "order": "created_at.desc"})
-
+                                                "order": "created_at.desc"}, admin=True)
     all_listings = all_response.json() if all_response.status_code == 200 else []
     pending = pending_response.json() if pending_response.status_code == 200 else []
-
     return render_template('admin_dashboard.html',
                            all_listings=all_listings,
                            pending=pending)
 
-# ── APPROVE LISTING ──────────────────────────────────────────────
 @app.route('/admin/approve/<listing_id>')
 def approve_listing(listing_id):
     if not session.get('admin'):
         return redirect('/admin')
     supabase_request("PATCH", "listings",
                      data={"approved": True},
-                     params={"id": f"eq.{listing_id}"})
+                     params={"id": f"eq.{listing_id}"}, admin=True)
     flash('Listing approved!', 'success')
     return redirect('/admin/dashboard')
 
-# ── MARK TAKEN FROM ADMIN ─────────────────────────────────────────
 @app.route('/admin/taken/<listing_id>')
 def admin_mark_taken(listing_id):
     if not session.get('admin'):
         return redirect('/admin')
     supabase_request("PATCH", "listings",
                      data={"available": False},
-                     params={"id": f"eq.{listing_id}"})
+                     params={"id": f"eq.{listing_id}"}, admin=True)
     flash('Listing marked as taken!', 'success')
     return redirect('/admin/dashboard')
 
-# ── FEATURE LISTING FROM ADMIN ────────────────────────────────────
 @app.route('/admin/feature/<listing_id>')
 def feature_listing(listing_id):
     if not session.get('admin'):
         return redirect('/admin')
     supabase_request("PATCH", "listings",
                      data={"featured": True},
-                     params={"id": f"eq.{listing_id}"})
+                     params={"id": f"eq.{listing_id}"}, admin=True)
     flash('Listing marked as featured!', 'success')
     return redirect('/admin/dashboard')
 
-# ── DELETE LISTING ───────────────────────────────────────────────
 @app.route('/admin/delete/<listing_id>')
 def delete_listing(listing_id):
     if not session.get('admin'):
         return redirect('/admin')
     supabase_request("DELETE", "listings",
-                     params={"id": f"eq.{listing_id}"})
+                     params={"id": f"eq.{listing_id}"}, admin=True)
     flash('Listing deleted!', 'success')
     return redirect('/admin/dashboard')
 
-# ── ADMIN REPORTS ─────────────────────────────────────────────────
 @app.route('/admin/reports')
 def admin_reports():
     if not session.get('admin'):
         return redirect('/admin')
     response = supabase_request("GET", "reports",
-                                params={"order": "created_at.desc"})
+                                params={"order": "created_at.desc"}, admin=True)
     reports = response.json() if response.status_code == 200 else []
     return render_template('admin_reports.html', reports=reports)
 
-# ── ADMIN AGENTS ──────────────────────────────────────────────────
 @app.route('/admin/agents')
 def admin_agents():
     if not session.get('admin'):
         return redirect('/admin')
     response = supabase_request("GET", "agents",
-                                params={"order": "created_at.desc"})
+                                params={"order": "created_at.desc"}, admin=True)
     agents = response.json() if response.status_code == 200 else []
     return render_template('admin_agents.html', agents=agents)
 
-# ── FLAG AGENT ────────────────────────────────────────────────────
 @app.route('/admin/flag/<phone>')
 def flag_agent(phone):
     if not session.get('admin'):
@@ -382,64 +374,51 @@ def flag_agent(phone):
     reason = request.args.get('reason', 'Flagged by admin')
     supabase_request("PATCH", "agents",
                      data={"flagged": True, "flag_reason": reason},
-                     params={"phone": f"eq.{phone}"})
+                     params={"phone": f"eq.{phone}"}, admin=True)
     flash(f'Agent {phone} has been flagged!', 'success')
     return redirect('/admin/agents')
 
-# ── BLOCK AGENT ───────────────────────────────────────────────────
 @app.route('/admin/block/<phone>')
 def block_agent(phone):
     if not session.get('admin'):
         return redirect('/admin')
     supabase_request("PATCH", "agents",
                      data={"blocked": True, "flagged": True},
-                     params={"phone": f"eq.{phone}"})
+                     params={"phone": f"eq.{phone}"}, admin=True)
     supabase_request("PATCH", "listings",
                      data={"approved": False, "available": False},
-                     params={"phone": f"eq.{phone}"})
+                     params={"phone": f"eq.{phone}"}, admin=True)
     flash(f'Agent {phone} blocked and listings removed!', 'success')
     return redirect('/admin/agents')
 
-# ── UNBLOCK AGENT ─────────────────────────────────────────────────
 @app.route('/admin/unblock/<phone>')
 def unblock_agent(phone):
     if not session.get('admin'):
         return redirect('/admin')
     supabase_request("PATCH", "agents",
                      data={"blocked": False, "flagged": False, "flag_reason": None},
-                     params={"phone": f"eq.{phone}"})
+                     params={"phone": f"eq.{phone}"}, admin=True)
     flash(f'Agent {phone} has been unblocked!', 'success')
     return redirect('/admin/agents')
 
-# ── ADMIN VERIFICATIONS ───────────────────────────────────────────
 @app.route('/admin/verifications')
 def admin_verifications():
     if not session.get('admin'):
         return redirect('/admin')
     response = supabase_request("GET", "verifications",
-                                params={"order": "created_at.desc"})
+                                params={"order": "created_at.desc"}, admin=True)
     verifications = response.json() if response.status_code == 200 else []
     return render_template('admin_verifications.html', verifications=verifications)
 
-# ── VERIFY AGENT APPROVE ──────────────────────────────────────────
 @app.route('/admin/verify-agent/<verification_id>/<phone>')
 def verify_agent_approve(verification_id, phone):
     if not session.get('admin'):
         return redirect('/admin')
     supabase_request("PATCH", "verifications",
                      data={"verified": True},
-                     params={"id": f"eq.{verification_id}"})
+                     params={"id": f"eq.{verification_id}"}, admin=True)
     supabase_request("PATCH", "listings",
                      data={"verified": True},
-                     params={"phone": f"eq.{phone}"})
-    flash('Agent verified! All their listings now show verified badge.', 'success')
+                     params={"phone": f"eq.{phone}"}, admin=True)
+    flash('Agent verified!', 'success')
     return redirect('/admin/verifications')
-
-# ── ADMIN LOGOUT ─────────────────────────────────────────────────
-@app.route('/admin/logout')
-def admin_logout():
-    session.pop('admin', None)
-    return redirect('/')
-
-if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', port=8080)
