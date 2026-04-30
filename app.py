@@ -4,9 +4,15 @@ import os
 import requests
 import cloudinary
 import cloudinary.uploader
-import random
-import string
-from datetime import datetime, timedelta
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"]
+)
+
 
 load_dotenv()
 
@@ -293,7 +299,7 @@ def admin_login():
             return redirect('/admin/dashboard')
         else:
             flash('Wrong password!', 'danger')
-    return render_template('admin_login.html')
+    return redirect('/futanest-control-2025/dashboard')
 
 @app.route('/admin/dashboard')
 def admin_dashboard():
@@ -339,6 +345,7 @@ def feature_listing(listing_id):
                      params={"id": f"eq.{listing_id}"}, admin=True)
     flash('Listing marked as featured!', 'success')
     return redirect('/admin/dashboard')
+
 
 @app.route('/admin/delete/<listing_id>')
 def delete_listing(listing_id):
@@ -422,3 +429,24 @@ def verify_agent_approve(verification_id, phone):
                      params={"phone": f"eq.{phone}"}, admin=True)
     flash('Agent verified!', 'success')
     return redirect('/admin/verifications')
+
+@app.route('/post-listing', methods=['GET', 'POST'])
+@limiter.limit("10 per hour")
+def post_listing():
+    ...
+@app.route('/futanest-control-2025', methods=['GET', 'POST'])
+@limiter.limit("20 per hour")
+def admin_login():
+    ...
+
+@app.route('/report/<listing_id>', methods=['GET', 'POST'])
+@limiter.limit("5 per hour")
+def report_listing(listing_id):
+    ...
+    
+@app.after_request
+def add_security_headers(response):
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    return response
