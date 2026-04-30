@@ -7,29 +7,30 @@ import cloudinary.uploader
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
+load_dotenv()
+
+app = Flask(__name__)
+app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-key-change-later')
+
+# Rate limiter
 limiter = Limiter(
     get_remote_address,
     app=app,
     default_limits=["200 per day", "50 per hour"]
 )
 
-
-load_dotenv()
-
-app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-key-change-later')
-
+# Supabase config
 SUPABASE_URL = os.getenv('SUPABASE_URL')
 SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_KEY')
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
 
+# Cloudinary config
 cloudinary.config(
     cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME', 'da6gxwgjq'),
     api_key=os.getenv('CLOUDINARY_API_KEY', '593233257222916'),
     api_secret=os.getenv('CLOUDINARY_API_SECRET', 'XZCJn5dh6jnFAr1-pgz2J1ntLzQ')
 )
-
-SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_KEY')
 
 def supabase_request(method, endpoint, data=None, params=None, admin=False):
     url = f"{SUPABASE_URL}/rest/v1/{endpoint}"
@@ -48,6 +49,14 @@ def supabase_request(method, endpoint, data=None, params=None, admin=False):
         response = requests.patch(url, headers=headers, json=data, params=params)
     elif method == "DELETE":
         response = requests.delete(url, headers=headers, params=params)
+    return response
+
+# ── SECURITY HEADERS ─────────────────────────────────────────────
+@app.after_request
+def add_security_headers(response):
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
     return response
 
 # ── HOME PAGE ────────────────────────────────────────────────────
@@ -77,6 +86,7 @@ def listings():
 
 # ── POST LISTING ─────────────────────────────────────────────────
 @app.route('/post-listing', methods=['GET', 'POST'])
+@limiter.limit("10 per hour")
 def post_listing():
     if request.method == 'POST':
         image_url = ''
@@ -89,7 +99,6 @@ def post_listing():
             flash('Name and phone number are required.', 'danger')
             return redirect('/post-listing')
 
-        # Format phone number
         if phone.startswith('0'):
             phone = '234' + phone[1:]
 
@@ -101,7 +110,7 @@ def post_listing():
             flash('Your number has been blocked from FUTA Nest. Contact admin if this is a mistake.', 'danger')
             return redirect('/')
 
-        # Check listing limit — max 3 active listings per phone
+        # Check listing limit
         existing_listings = supabase_request("GET", "listings",
                                              params={"phone": f"eq.{phone}",
                                                      "available": "eq.true"})
@@ -111,25 +120,23 @@ def post_listing():
 
         price = int(request.form.get('price', 0))
 
-        # Price validation
         if price < 30000:
-            flash('Price seems too low. Minimum price is ₦30,000/year. Please check and resubmit.', 'danger')
+            flash('Price seems too low. Minimum price is ₦30,000/year.', 'danger')
             return redirect('/post-listing')
         if price > 2000000:
             flash('Price seems unusually high. Please contact admin if this is correct.', 'danger')
             return redirect('/post-listing')
 
-        # Check for duplicate listing
+        # Check for duplicate
         duplicate_check = supabase_request("GET", "listings",
                                            params={"phone": f"eq.{phone}",
                                                    "area": f"eq.{request.form.get('area')}",
                                                    "price": f"eq.{price}",
                                                    "available": "eq.true"})
         if duplicate_check.json():
-            flash('You already have a listing with the same area and price. Please check your existing listings.', 'danger')
+            flash('You already have a listing with the same area and price.', 'danger')
             return redirect('/post-listing')
 
-        # Auto flag suspicious listings
         flagged = price < 50000 or price > 1000000
 
         # Upload image
@@ -229,6 +236,7 @@ def agent_logout():
 
 # ── REPORT LISTING ───────────────────────────────────────────────
 @app.route('/report/<listing_id>', methods=['GET', 'POST'])
+@limiter.limit("5 per hour")
 def report_listing(listing_id):
     if request.method == 'POST':
         data = {
@@ -245,7 +253,7 @@ def report_listing(listing_id):
     listing = response.json()[0] if response.json() else {}
     return render_template('report.html', listing=listing)
 
-# ── MARK AS TAKEN (AGENT LINK) ───────────────────────────────────
+# ── MARK AS TAKEN ────────────────────────────────────────────────
 @app.route('/taken/<listing_id>')
 def mark_taken(listing_id):
     response = supabase_request("GET", "listings",
@@ -290,7 +298,8 @@ def verify_agent():
     return render_template('verify.html')
 
 # ── ADMIN LOGIN ──────────────────────────────────────────────────
-@app.route('/admin', methods=['GET', 'POST'])
+@app.route('/futanest-control-2025', methods=['GET', 'POST'])
+@limiter.limit("20 per hour")
 def admin_login():
     if request.method == 'POST':
         password = request.form.get('password')
@@ -299,85 +308,95 @@ def admin_login():
             return redirect('/admin/dashboard')
         else:
             flash('Wrong password!', 'danger')
-    return redirect('/futanest-control-2025/dashboard')
+    return render_template('admin_login.html')
 
+# ── ADMIN DASHBOARD ──────────────────────────────────────────────
 @app.route('/admin/dashboard')
 def admin_dashboard():
     if not session.get('admin'):
-        return redirect('/admin')
+        return redirect('/futanest-control-2025')
+
     all_response = supabase_request("GET", "listings",
                                     params={"order": "created_at.desc"}, admin=True)
     pending_response = supabase_request("GET", "listings",
                                         params={"approved": "eq.false",
                                                 "order": "created_at.desc"}, admin=True)
+
     all_listings = all_response.json() if all_response.status_code == 200 else []
     pending = pending_response.json() if pending_response.status_code == 200 else []
+
     return render_template('admin_dashboard.html',
                            all_listings=all_listings,
                            pending=pending)
 
+# ── APPROVE LISTING ──────────────────────────────────────────────
 @app.route('/admin/approve/<listing_id>')
 def approve_listing(listing_id):
     if not session.get('admin'):
-        return redirect('/admin')
+        return redirect('/futanest-control-2025')
     supabase_request("PATCH", "listings",
                      data={"approved": True},
                      params={"id": f"eq.{listing_id}"}, admin=True)
     flash('Listing approved!', 'success')
     return redirect('/admin/dashboard')
 
+# ── MARK TAKEN FROM ADMIN ─────────────────────────────────────────
 @app.route('/admin/taken/<listing_id>')
 def admin_mark_taken(listing_id):
     if not session.get('admin'):
-        return redirect('/admin')
+        return redirect('/futanest-control-2025')
     supabase_request("PATCH", "listings",
                      data={"available": False},
                      params={"id": f"eq.{listing_id}"}, admin=True)
     flash('Listing marked as taken!', 'success')
     return redirect('/admin/dashboard')
 
+# ── FEATURE LISTING FROM ADMIN ────────────────────────────────────
 @app.route('/admin/feature/<listing_id>')
 def feature_listing(listing_id):
     if not session.get('admin'):
-        return redirect('/admin')
+        return redirect('/futanest-control-2025')
     supabase_request("PATCH", "listings",
                      data={"featured": True},
                      params={"id": f"eq.{listing_id}"}, admin=True)
     flash('Listing marked as featured!', 'success')
     return redirect('/admin/dashboard')
 
-
+# ── DELETE LISTING ───────────────────────────────────────────────
 @app.route('/admin/delete/<listing_id>')
 def delete_listing(listing_id):
     if not session.get('admin'):
-        return redirect('/admin')
+        return redirect('/futanest-control-2025')
     supabase_request("DELETE", "listings",
                      params={"id": f"eq.{listing_id}"}, admin=True)
     flash('Listing deleted!', 'success')
     return redirect('/admin/dashboard')
 
+# ── ADMIN REPORTS ─────────────────────────────────────────────────
 @app.route('/admin/reports')
 def admin_reports():
     if not session.get('admin'):
-        return redirect('/admin')
+        return redirect('/futanest-control-2025')
     response = supabase_request("GET", "reports",
                                 params={"order": "created_at.desc"}, admin=True)
     reports = response.json() if response.status_code == 200 else []
     return render_template('admin_reports.html', reports=reports)
 
+# ── ADMIN AGENTS ──────────────────────────────────────────────────
 @app.route('/admin/agents')
 def admin_agents():
     if not session.get('admin'):
-        return redirect('/admin')
+        return redirect('/futanest-control-2025')
     response = supabase_request("GET", "agents",
                                 params={"order": "created_at.desc"}, admin=True)
     agents = response.json() if response.status_code == 200 else []
     return render_template('admin_agents.html', agents=agents)
 
+# ── FLAG AGENT ────────────────────────────────────────────────────
 @app.route('/admin/flag/<phone>')
 def flag_agent(phone):
     if not session.get('admin'):
-        return redirect('/admin')
+        return redirect('/futanest-control-2025')
     reason = request.args.get('reason', 'Flagged by admin')
     supabase_request("PATCH", "agents",
                      data={"flagged": True, "flag_reason": reason},
@@ -385,10 +404,11 @@ def flag_agent(phone):
     flash(f'Agent {phone} has been flagged!', 'success')
     return redirect('/admin/agents')
 
+# ── BLOCK AGENT ───────────────────────────────────────────────────
 @app.route('/admin/block/<phone>')
 def block_agent(phone):
     if not session.get('admin'):
-        return redirect('/admin')
+        return redirect('/futanest-control-2025')
     supabase_request("PATCH", "agents",
                      data={"blocked": True, "flagged": True},
                      params={"phone": f"eq.{phone}"}, admin=True)
@@ -398,29 +418,32 @@ def block_agent(phone):
     flash(f'Agent {phone} blocked and listings removed!', 'success')
     return redirect('/admin/agents')
 
+# ── UNBLOCK AGENT ─────────────────────────────────────────────────
 @app.route('/admin/unblock/<phone>')
 def unblock_agent(phone):
     if not session.get('admin'):
-        return redirect('/admin')
+        return redirect('/futanest-control-2025')
     supabase_request("PATCH", "agents",
                      data={"blocked": False, "flagged": False, "flag_reason": None},
                      params={"phone": f"eq.{phone}"}, admin=True)
     flash(f'Agent {phone} has been unblocked!', 'success')
     return redirect('/admin/agents')
 
+# ── ADMIN VERIFICATIONS ───────────────────────────────────────────
 @app.route('/admin/verifications')
 def admin_verifications():
     if not session.get('admin'):
-        return redirect('/admin')
+        return redirect('/futanest-control-2025')
     response = supabase_request("GET", "verifications",
                                 params={"order": "created_at.desc"}, admin=True)
     verifications = response.json() if response.status_code == 200 else []
     return render_template('admin_verifications.html', verifications=verifications)
 
+# ── VERIFY AGENT APPROVE ──────────────────────────────────────────
 @app.route('/admin/verify-agent/<verification_id>/<phone>')
 def verify_agent_approve(verification_id, phone):
     if not session.get('admin'):
-        return redirect('/admin')
+        return redirect('/futanest-control-2025')
     supabase_request("PATCH", "verifications",
                      data={"verified": True},
                      params={"id": f"eq.{verification_id}"}, admin=True)
@@ -430,23 +453,11 @@ def verify_agent_approve(verification_id, phone):
     flash('Agent verified!', 'success')
     return redirect('/admin/verifications')
 
-@app.route('/post-listing', methods=['GET', 'POST'])
-@limiter.limit("10 per hour")
-def post_listing():
-    ...
-@app.route('/futanest-control-2025', methods=['GET', 'POST'])
-@limiter.limit("20 per hour")
-def admin_login():
-    ...
+# ── ADMIN LOGOUT ─────────────────────────────────────────────────
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('admin', None)
+    return redirect('/')
 
-@app.route('/report/<listing_id>', methods=['GET', 'POST'])
-@limiter.limit("5 per hour")
-def report_listing(listing_id):
-    ...
-    
-@app.after_request
-def add_security_headers(response):
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['X-Frame-Options'] = 'DENY'
-    response.headers['X-XSS-Protection'] = '1; mode=block'
-    return response
+if __name__ == '__main__':
+    app.run(debug=True, host='127.0.0.1', port=8080)
