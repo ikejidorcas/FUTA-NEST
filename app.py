@@ -16,7 +16,7 @@ app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-key-change-later')
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["200 per day", "50 per hour"]
+    default_limits=["2000 per day", "200 per hour"]
 )
 
 # Supabase config
