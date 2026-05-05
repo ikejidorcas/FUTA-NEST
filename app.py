@@ -107,7 +107,7 @@ def post_listing():
                                          params={"phone": f"eq.{phone}",
                                                  "blocked": "eq.true"})
         if blocked_check.json():
-            flash('Your number has been blocked from FUTA Nest. Contact admin if this is a mistake.', 'danger')
+            flash('Your number has been blocked from Rentiva. Contact admin if this is a mistake.', 'danger')
             return redirect('/')
 
         # Check listing limit
@@ -206,7 +206,7 @@ def agent_register():
                                          params={"phone": f"eq.{phone}",
                                                  "blocked": "eq.true"})
         if blocked_check.json():
-            flash('This number has been blocked from FUTA Nest.', 'danger')
+            flash('This number has been blocked from Rentiva.', 'danger')
             return redirect('/agent/register')
 
         existing = supabase_request("GET", "agents",
@@ -265,7 +265,7 @@ def mark_taken(listing_id):
                      params={"id": f"eq.{listing_id}"})
 
     your_number = "2349050638087"
-    message = f"FUTA Nest Alert: '{listing.get('title', 'A listing')}' in {listing.get('area', '')} has been marked as TAKEN by agent {listing.get('agent_name', '')}."
+    message = f"Rentiva Alert: '{listing.get('title', 'A listing')}' in {listing.get('area', '')} has been marked as TAKEN by agent {listing.get('agent_name', '')}."
     whatsapp_url = f"https://wa.me/{your_number}?text={message}"
     return render_template('taken.html', whatsapp_url=whatsapp_url)
 
