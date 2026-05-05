@@ -143,14 +143,14 @@ def post_listing():
         image_file = request.files.get('image')
         if image_file and image_file.filename != '':
             image_upload = cloudinary.uploader.upload(
-                image_file, folder="futa-nest/images")
+                image_file, folder="rentiva/images")
             image_url = image_upload.get('secure_url', '')
 
         # Upload video
         video_file = request.files.get('video')
         if video_file and video_file.filename != '':
             video_upload = cloudinary.uploader.upload(
-                video_file, resource_type="video", folder="futa-nest/videos")
+                video_file, resource_type="video", folder="rentiva/videos")
             video_url = video_upload.get('secure_url', '')
 
         # Register agent if not existing
@@ -282,7 +282,7 @@ def verify_agent():
         agent_id_url = ''
         if agent_id_file and agent_id_file.filename != '':
             id_upload = cloudinary.uploader.upload(
-                agent_id_file, folder="futa-nest/ids")
+                agent_id_file, folder="rentiva/ids")
             agent_id_url = id_upload.get('secure_url', '')
 
         data = {
