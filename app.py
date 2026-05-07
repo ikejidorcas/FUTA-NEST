@@ -86,7 +86,7 @@ def listings():
 
 # ── POST LISTING ─────────────────────────────────────────────────
 @app.route('/post-listing', methods=['GET', 'POST'])
-@limiter.limit("10 per hour")
+@limiter.limit("10 per hour", methods=["POST"])
 def post_listing():
     if request.method == 'POST':
         image_url = ''
