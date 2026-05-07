@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rentiva — Listing Taken</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Rentiva — Marking as Taken</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Inter', sans-serif; }
+        * { font-family: 'Inter', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: linear-gradient(135deg, #050d1f, #0a3d6b);
             min-height: 100vh;
@@ -21,9 +20,23 @@
             padding: 50px 40px;
             text-align: center;
             max-width: 480px;
+            width: 90%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        .icon {
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(77,166,255,0.2);
+            border-top-color: #4da6ff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 24px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .brand { color: #4da6ff; font-weight: 900; letter-spacing: 2px; font-size: 1.2rem; margin-bottom: 28px; }
+        h2 { font-weight: 800; color: #050d1f; margin-bottom: 12px; font-size: 1.4rem; }
+        p { color: #7a8ca0; line-height: 1.6; font-size: 0.9rem; }
+        .success-icon {
             width: 64px;
             height: 64px;
             background: #e8f5e9;
@@ -32,46 +45,65 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
+            font-size: 1.8rem;
         }
-        .icon svg {
-            width: 32px;
-            height: 32px;
-            stroke: #2e7d32;
-            fill: none;
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            display: block;
+            margin-top: 16px;
+            font-size: 0.95rem;
         }
-        h2 { font-weight: 800; color: #050d1f; margin-bottom: 12px; }
-        p { color: #7a8ca0; line-height: 1.6; }
         .btn-home {
             background: linear-gradient(135deg, #1565c0, #1e88e5);
             color: white;
             border: none;
             border-radius: 10px;
-            padding: 12px 28px;
-            font-weight: 600;
+            padding: 14px;
+            font-weight: 700;
             text-decoration: none;
-            display: inline-block;
-            margin-top: 20px;
+            display: block;
+            margin-top: 10px;
+            font-size: 0.95rem;
         }
-        .btn-home:hover { opacity: 0.9; color: white; }
-        .brand { color: #4da6ff; font-weight: 900; letter-spacing: 2px; font-size: 1.2rem; margin-bottom: 24px; }
+        #loading { display: block; }
+        #success { display: none; }
     </style>
 </head>
 <body>
     <div class="card">
         <div class="brand">RENTIVA</div>
-        <div class="icon">
-            <svg viewBox="0 0 24 24" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-            </svg>
+
+        <div id="loading">
+            <div class="spinner"></div>
+            <h2>Processing...</h2>
+            <p>Marking your listing as taken.<br>Please wait, this takes a few seconds.</p>
         </div>
-        <h2>Listing Marked as Taken</h2>
-        <p>Your listing has been removed from student view. Thank you for keeping Rentiva up to date!</p>
-        <a href="{{ whatsapp_url }}" class="btn-home" style="background:#25D366;">
-    Notify Admin via WhatsApp
-</a>
-<a href="/" class="btn-home" style="margin-top:10px;display:inline-block;">
-    Go to Homepage
-</a>
+
+        <div id="success">
+            <div class="success-icon">✅</div>
+            <h2>House Marked as Taken!</h2>
+            <p>Your listing has been removed from student view. Thank you!</p>
+            {% if whatsapp_url %}
+            <a href="{{ whatsapp_url }}" class="btn-whatsapp" target="_blank">
+                Notify Admin on WhatsApp
+            </a>
+            {% endif %}
+            <a href="/" class="btn-home">Go to Homepage</a>
+        </div>
     </div>
+
+    <script>
+        // Show success after a short delay since page loaded = server processed successfully
+        setTimeout(function() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('success').style.display = 'block';
+        }, 1500);
+    </script>
 </body>
 </html>
