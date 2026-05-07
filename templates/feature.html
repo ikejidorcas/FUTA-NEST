@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rentiva — Feature Your Listing</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: linear-gradient(135deg, #050d1f, #0a3d6b); min-height: 100vh; }
+        .navbar { background-color: #050d1f; padding: 16px 40px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .brand-name { font-size: 1.5rem; font-weight: 900; letter-spacing: 3px; color: #4da6ff; text-decoration: none; text-transform: uppercase; }
+        .page-wrapper { padding: 60px 0; }
+        .page-header { text-align: center; margin-bottom: 50px; }
+        .page-badge { display: inline-block; background: rgba(77,166,255,0.15); border: 1px solid rgba(77,166,255,0.3); color: #4da6ff; border-radius: 20px; padding: 6px 16px; font-size: 0.8rem; font-weight: 600; letter-spacing: 1px; margin-bottom: 14px; }
+        .page-title { font-size: 2.2rem; font-weight: 800; color: white; margin-bottom: 10px; }
+        .page-subtitle { color: #8ab4d4; font-size: 1rem; }
+        .plan-card { background: white; border-radius: 20px; padding: 36px; box-shadow: 0 24px 80px rgba(0,0,0,0.4); margin-bottom: 24px; }
+        .plan-card.featured { border: 2px solid #4da6ff; }
+        .plan-name { font-size: 1.2rem; font-weight: 800; color: #050d1f; margin-bottom: 6px; }
+        .plan-price { font-size: 2.5rem; font-weight: 900; color: #1565c0; margin-bottom: 4px; }
+        .plan-period { font-size: 0.85rem; color: #7a8ca0; margin-bottom: 20px; }
+        .plan-features { list-style: none; padding: 0; margin-bottom: 24px; }
+        .plan-features li { padding: 8px 0; border-bottom: 1px solid #f0f4ff; font-size: 0.9rem; color: #2d3748; display: flex; align-items: center; gap: 10px; }
+        .plan-features li:last-child { border-bottom: none; }
+        .check { color: #10b981; font-weight: 700; }
+        .bank-card { background: #f8faff; border-radius: 14px; padding: 24px; border: 1px solid #e8edf5; margin-bottom: 16px; }
+        .bank-label { font-size: 0.78rem; font-weight: 700; color: #7a8ca0; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .bank-value { font-size: 1.1rem; font-weight: 700; color: #050d1f; }
+        .btn-whatsapp { background: #25D366; color: white; border: none; border-radius: 12px; padding: 15px; font-weight: 700; font-size: 1rem; width: 100%; text-decoration: none; display: block; text-align: center; transition: opacity 0.2s; margin-top: 8px; }
+        .btn-whatsapp:hover { opacity: 0.9; color: white; }
+        .step { display: flex; gap: 16px; margin-bottom: 20px; align-items: flex-start; }
+        .step-number { width: 32px; height: 32px; background: #1565c0; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; }
+        .step-title { font-weight: 700; color: #050d1f; margin-bottom: 4px; font-size: 0.95rem; }
+        .step-desc { color: #7a8ca0; font-size: 0.85rem; }
+        footer { background: #030810; color: #4a6080; padding: 24px 0; text-align: center; font-size: 0.88rem; }
+        footer span { color: #4da6ff; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <nav class="navbar d-flex justify-content-between align-items-center">
+        <a href="/" class="brand-name">RENTIVA</a>
+        <a href="/listings" style="color:#8ab4d4;text-decoration:none;font-size:0.9rem;">View Listings</a>
+    </nav>
+
+    <div class="page-wrapper">
+        <div class="container">
+            <div class="page-header">
+                <div class="page-badge">FOR AGENTS</div>
+                <h1 class="page-title">Feature Your Listing</h1>
+                <p class="page-subtitle">Appear at the top of search results and get more student inquiries</p>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-5 mb-4">
+                    <div class="plan-card">
+                        <div class="plan-name">Standard Listing</div>
+                        <div class="plan-price">Free</div>
+                        <div class="plan-period">Always free</div>
+                        <ul class="plan-features">
+                            <li><span class="check">✓</span> Listed on Rentiva</li>
+                            <li><span class="check">✓</span> Photo upload</li>
+                            <li><span class="check">✓</span> Video tour upload</li>
+                            <li><span class="check">✓</span> Direct student contact</li>
+                            <li style="color:#bbb;">✗ Featured placement</li>
+                            <li style="color:#bbb;">✗ Top of search results</li>
+                        </ul>
+                        <a href="/post-listing" style="background:#f0f4ff;color:#1565c0;border:1px solid #c8d9f5;border-radius:12px;padding:14px;font-weight:700;font-size:1rem;width:100%;text-decoration:none;display:block;text-align:center;">
+                            Post Free Listing
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-5 mb-4">
+                    <div class="plan-card featured">
+                        <div style="background:#4da6ff;color:white;border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:700;display:inline-block;margin-bottom:12px;">RECOMMENDED</div>
+                        <div class="plan-name">Featured Listing</div>
+                        <div class="plan-price">₦3,000</div>
+                        <div class="plan-period">per listing — one time</div>
+                        <ul class="plan-features">
+                            <li><span class="check">✓</span> Everything in Standard</li>
+                            <li><span class="check">✓</span> Appears at TOP of results</li>
+                            <li><span class="check">✓</span> Featured badge on listing</li>
+                            <li><span class="check">✓</span> 3x more student views</li>
+                            <li><span class="check">✓</span> Priority approval</li>
+                            <li><span class="check">✓</span> 30 day featured placement</li>
+                        </ul>
+                        <a href="#how-to-pay" style="background:linear-gradient(135deg,#1565c0,#1e88e5);color:white;border:none;border-radius:12px;padding:14px;font-weight:700;font-size:1rem;width:100%;text-decoration:none;display:block;text-align:center;">
+                            Get Featured Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="plan-card mt-2" id="how-to-pay" style="max-width:600px;margin:0 auto;">
+                <h4 style="font-weight:800;color:#050d1f;margin-bottom:24px;">How to Pay</h4>
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <div class="step-title">Transfer ₦3,000 to this account</div>
+                        <div class="step-desc">Use your mobile banking app or USSD</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <div class="step-title">Send your receipt on WhatsApp</div>
+                        <div class="step-desc">Include your listing title so we know which one to feature</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <div class="step-title">Your listing gets featured within 1 hour</div>
+                        <div class="step-desc">We'll confirm on WhatsApp once it's done</div>
+                    </div>
+                </div>
+
+                <div class="bank-card">
+                    <div class="bank-label">Bank</div>
+                    <div class="bank-value">UBA</div>
+                </div>
+                <div class="bank-card">
+                    <div class="bank-label">Account Number</div>
+                    <div class="bank-value">ENTER YOUR ACCOUNT NUMBER</div>
+                </div>
+                <div class="bank-card">
+                    <div class="bank-label">Account Name</div>
+                    <div class="bank-value">ENTER YOUR NAME</div>
+                </div>
+                <div class="bank-card">
+                    <div class="bank-label">Amount</div>
+                    <div class="bank-value" style="color:#1565c0;">₦3,000</div>
+                </div>
+
+                <a href="https://wa.me/2349050638087?text=Hi, I just made payment for a featured listing on Rentiva. Here is my receipt:"
+                   class="btn-whatsapp" target="_blank">
+                    Send Receipt on WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <span>RENTIVA</span> &mdash; Student Housing Platform &copy; 2025
+    </footer>
+</body>
+</html>
