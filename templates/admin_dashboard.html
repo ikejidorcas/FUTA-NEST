@@ -210,8 +210,18 @@
    View Reports
 </a>
 
-<button onclick="navigator.clipboard.writeText('Your house listing on Rentiva has been rented out! Please send this message to notify the admin: TAKEN - {{ listing.id }}'); alert('Message copied! Send this to the agent on WhatsApp.')" 
-   class="btn-approve me-1" style="border:none;cursor:pointer;font-size:0.78rem;">
+<button onclick="
+const msg = 'Hello, I want to report that the following house listed on Rentiva has been rented out:\n\n' +
+'🏠 *Title:* {{ listing.title }}\n' +
+'📍 *Area:* {{ listing.area }}\n' +
+'💰 *Price:* ₦{{ '{:,}'.format(listing.price) }}/yr\n' +
+'👤 *Agent:* {{ listing.agent_name }}\n' +
+'📞 *Phone:* {{ listing.phone }}\n' +
+'🆔 *Listing ID:* {{ listing.id }}\n\n' +
+'Please mark this listing as taken. Thank you.';
+navigator.clipboard.writeText(msg);
+alert('Message copied! Send this to the agent on WhatsApp.');
+" class="btn-approve me-1" style="border:none;cursor:pointer;font-size:0.78rem;">
    Copy Agent Message
 </button>
                             </td>
