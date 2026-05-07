@@ -211,14 +211,17 @@
 </a>
 
 <button onclick="
-const msg = 'Hello, I want to report that the following house listed on Rentiva has been rented out:\n\n' +
+const msg = 'Hello {{ listing.agent_name }}, your house listing on Rentiva has been approved and is now live!\n\n' +
 '🏠 *Title:* {{ listing.title }}\n' +
 '📍 *Area:* {{ listing.area }}\n' +
-'💰 *Price:* ₦{{ '{:,}'.format(listing.price) }}/yr\n' +
-'👤 *Agent:* {{ listing.agent_name }}\n' +
-'📞 *Phone:* {{ listing.phone }}\n' +
-'🆔 *Listing ID:* {{ listing.id }}\n\n' +
-'Please mark this listing as taken. Thank you.';
+'💰 *Price:* ₦{{ '{:,}'.format(listing.price) }}/yr\n\n' +
+'*IMPORTANT:* When this house gets rented, please send me a WhatsApp message with the following details so I can remove it from the platform:\n\n' +
+'1. Your name\n' +
+'2. The house title above\n' +
+'3. The word TAKEN\n\n' +
+'Example: _Mr Adeleke - 2 Bedroom Flat at North Gate - TAKEN_\n\n' +
+'This helps prevent students from contacting you about a house that is no longer available.\n\n' +
+'Thank you for listing on Rentiva!';
 navigator.clipboard.writeText(msg);
 alert('Message copied! Send this to the agent on WhatsApp.');
 " class="btn-approve me-1" style="border:none;cursor:pointer;font-size:0.78rem;">
