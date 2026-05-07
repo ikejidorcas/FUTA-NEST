@@ -210,9 +210,9 @@
    View Reports
 </a>
 
-<button onclick="navigator.clipboard.writeText('https://rentiva.onrender.com/taken/{{ listing.id }}'); alert('Agent link copied!')" 
-   class="btn-approve me-1" style="border:none;cursor:pointer;">
-   Copy Agent Link        
+<button onclick="navigator.clipboard.writeText('Your house listing on Rentiva has been rented out! Please send this message to notify the admin: TAKEN - {{ listing.id }}'); alert('Message copied! Send this to the agent on WhatsApp.')" 
+   class="btn-approve me-1" style="border:none;cursor:pointer;font-size:0.78rem;">
+   Copy Agent Message
 </button>
                             </td>
                         </tr>
