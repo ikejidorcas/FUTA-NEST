@@ -110,13 +110,7 @@ def post_listing():
             flash('Your number has been blocked from Rentiva. Contact admin if this is a mistake.', 'danger')
             return redirect('/')
 
-        # Check listing limit
-        existing_listings = supabase_request("GET", "listings",
-                                             params={"phone": f"eq.{phone}",
-                                                     "available": "eq.true"})
-        if existing_listings.json() and len(existing_listings.json()) >= 3:
-            flash('You already have 3 active listings. Please mark a house as taken before posting a new one.', 'danger')
-            return redirect('/post-listing')
+        
 
         price = int(request.form.get('price', 0))
 
