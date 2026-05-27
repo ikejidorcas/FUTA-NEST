@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rentiva — Ambassadors</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
+
+    body {
+      background: #f4f6fb;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ── TOPBAR — matches your dark navy bar ── */
+    .topbar {
+      background: #0d1117;
+      padding: 0 40px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .topbar-brand {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #4a9eff;
+      letter-spacing: 1px;
+      text-decoration: none;
+    }
+
+    .topbar-brand:hover { color: #4a9eff; }
+
+    .admin-badge {
+      background: #4a9eff;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .topbar-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .topbar-nav a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .topbar-nav a:hover { color: #fff; background: rgba(255,255,255,0.07); }
+    .topbar-nav a.active { color: #fff; }
+
+    .btn-logout {
+      border: 1.5px solid rgba(255,255,255,0.25);
+      color: #fff;
+      background: transparent;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 7px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+    /* ── PAGE HEADER — matches your "Admin Dashboard" dark section ── */
+    .page-hero {
+      background: #0d1117;
+      padding: 36px 40px 32px;
+    }
+
+    .page-hero h1 {
+      color: #fff;
+      font-size: 1.9rem;
+      font-weight: 800;
+      margin: 0 0 6px;
+    }
+
+    .page-hero p {
+      color: rgba(255,255,255,0.45);
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    /* ── MAIN ── */
+    .main {
+      padding: 36px 40px;
+      max-width: 1200px;
+    }
+
+    /* ── STAT CARDS — matches your 3 stat cards ── */
+    .stat-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px 24px;
+      border-top: 3px solid transparent;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .stat-card.blue  { border-top-color: #4a9eff; }
+    .stat-card.amber { border-top-color: #f6a623; }
+    .stat-card.green { border-top-color: #22c55e; }
+
+    .stat-card .stat-number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-card.blue  .stat-number { color: #4a9eff; }
+    .stat-card.amber .stat-number { color: #f6a623; }
+    .stat-card.green .stat-number { color: #22c55e; }
+
+    .stat-card .stat-label {
+      color: #6b7280;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    /* ── CARDS ── */
+    .card-panel {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+
+    .card-panel-header {
+      padding: 20px 28px;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-panel-header h5 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #111827;
+      margin: 0;
+    }
+
+    .count-pill {
+      background: #f3f4f6;
+      color: #6b7280;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    /* ── ADD FORM ── */
+    .form-body { padding: 24px 28px; }
+
+    .form-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+
+    .optional {
+      color: #9ca3af;
+      font-weight: 400;
+      font-size: 0.72rem;
+      margin-left: 3px;
+    }
+
+    .form-control, .form-select {
+      border: 1.5px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      padding: 10px 14px;
+      color: #111827;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: #4a9eff;
+      box-shadow: 0 0 0 3px rgba(74,158,255,0.12);
+      outline: none;
+    }
+
+    /* Upload area */
+    .upload-area {
+      border: 2px dashed #e5e7eb;
+      border-radius: 8px;
+      padding: 18px 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      min-height: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .upload-area:hover { border-color: #4a9eff; background: rgba(74,158,255,0.02); }
+
+    .upload-area input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .upload-area i { font-size: 1.5rem; color: #d1d5db; }
+    .upload-area span { font-size: 0.78rem; color: #9ca3af; margin-top: 4px; }
+
+    #imgPreview {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: none;
+      border: 2px solid #4a9eff;
+    }
+
+    /* Buttons — match your dashboard buttons */
+    .btn-primary-rentiva {
+      background: #4a9eff;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 10px 24px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      text-decoration: none;
+    }
+
+    .btn-primary-rentiva:hover {
+      background: #3080e8;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .btn-amber {
+      background: #f6a623;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-amber:hover { background: #e0951a; color: #fff; }
+
+    .btn-danger-sm {
+      background: #ef4444;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-danger-sm:hover { background: #dc2626; color: #fff; }
+
+    .btn-ghost-sm {
+      background: #f3f4f6;
+      color: #374151;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-ghost-sm:hover { background: #e5e7eb; color: #111827; }
+
+    /* ── TABLE ── */
+    table { margin: 0; width: 100%; }
+
+    thead th {
+      background: #f9fafb;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #6b7280;
+      padding: 12px 20px;
+      border-bottom: 1px solid #f3f4f6;
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 16px 20px;
+      vertical-align: middle;
+      font-size: 0.875rem;
+      border-bottom: 1px solid #f9fafb;
+      color: #374151;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #fafafa; }
+
+    .amb-avatar {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #e5e7eb;
+    }
+
+    .amb-initials {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4a9eff, #3080e8);
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .amb-name { font-weight: 600; color: #111827; }
+
+    .badge-position {
+      background: rgba(246,166,35,0.12);
+      color: #b45309;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    .badge-active {
+      background: rgba(34,197,94,0.1);
+      color: #15803d;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .badge-active::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+    }
+
+    .badge-inactive {
+      background: #f3f4f6;
+      color: #9ca3af;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .badge-inactive::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #d1d5db;
+    }
+
+    /* Flash */
+    .alert {
+      border: none;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .alert-success { background: rgba(34,197,94,0.1); color: #14532d; }
+    .alert-danger  { background: rgba(239,68,68,0.1);  color: #7f1d1d; }
+
+    /* Empty state */
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      color: #9ca3af;
+    }
+
+    .empty-state i { font-size: 2.5rem; display: block; margin-bottom: 10px; color: #e5e7eb; }
+    .empty-state p { margin: 0; font-size: 0.875rem; }
+
+    @media (max-width: 768px) {
+      .topbar { padding: 0 16px; }
+      .page-hero { padding: 24px 16px; }
+      .main { padding: 20px 16px; }
+      .form-body { padding: 18px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── TOPBAR ── -->
+  <nav class="topbar">
+    <div class="topbar-left">
+      <a href="/" class="topbar-brand">RENTIVA</a>
+      <span class="admin-badge">ADMIN</span>
+    </div>
+    <div class="topbar-nav">
+      <a href="/admin/logout" class="btn-logout">Logout</a>
+      <a href="/admin/reports">View Reports</a>
+      <a href="/admin/agents">Agents</a>
+      <a href="/admin/verifications">Verifications</a>
+      <a href="/admin/ambassadors" class="active">Ambassadors</a>
+    </div>
+  </nav>
+
+  <!-- ── PAGE HERO ── -->
+  <div class="page-hero">
+    <h1>Ambassadors</h1>
+    <p>Add and manage ambassadors displayed on the homepage carousel.</p>
+  </div>
+
+  <!-- ── MAIN ── -->
+  <div class="main">
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-4">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Stat cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <div class="stat-card blue">
+          <div class="stat-number">{{ ambassadors | length }}</div>
+          <div class="stat-label">Total Ambassadors</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card green">
+          <div class="stat-number">{{ ambassadors | selectattr('is_active') | list | length }}</div>
+          <div class="stat-label">Active on Carousel</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card amber">
+          <div class="stat-number">{{ ambassadors | rejectattr('is_active') | list | length }}</div>
+          <div class="stat-label">Hidden</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ADD AMBASSADOR FORM ── -->
+    <div class="card-panel mb-4">
+      <div class="card-panel-header">
+        <h5>➕ Add New Ambassador</h5>
+      </div>
+      <div class="form-body">
+        <form action="/admin/ambassadors/add" method="POST" enctype="multipart/form-data">
+          <div class="row g-3">
+
+            <div class="col-md-4">
+              <label class="form-label">Full Name <span style="color:#ef4444">*</span></label>
+              <input type="text" name="full_name" class="form-control"
+                     placeholder="e.g. Adewale Okonkwo" required>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Political Position <span style="color:#ef4444">*</span></label>
+              <input type="text" name="political_position" class="form-control"
+                     placeholder="e.g. SUG President" required>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Department <span class="optional">(optional)</span></label>
+              <input type="text" name="department" class="form-control"
+                     placeholder="e.g. Computer Science">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Faculty <span class="optional">(optional)</span></label>
+              <input type="text" name="faculty" class="form-control"
+                     placeholder="e.g. Science & Technology">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">Profile Photo <span class="optional">(optional)</span></label>
+              <div class="upload-area" id="uploadArea">
+                <input type="file" name="profile_image" accept="image/*" id="imgInput">
+                <img id="imgPreview" src="" alt="preview">
+                <i class="bi bi-cloud-arrow-up" id="uploadIcon"></i>
+                <span id="uploadText">Click to upload photo</span>
+              </div>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+              <button type="submit" class="btn-primary-rentiva">
+                <i class="bi bi-person-plus-fill"></i>
+                Add Ambassador
+              </button>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ── AMBASSADORS TABLE ── -->
+    <div class="card-panel">
+      <div class="card-panel-header">
+        <h5>All Ambassadors</h5>
+        <span class="count-pill">{{ ambassadors | length }}</span>
+      </div>
+
+      {% if ambassadors %}
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Ambassador</th>
+              <th>Position</th>
+              <th>Department</th>
+              <th>Faculty</th>
+              <th>Status</th>
+              <th>Date Added</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for amb in ambassadors %}
+            <tr>
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  {% if amb.profile_image_url %}
+                    <img src="{{ amb.profile_image_url }}" class="amb-avatar" alt="{{ amb.full_name }}">
+                  {% else %}
+                    <div class="amb-initials">{{ amb.full_name[0].upper() }}</div>
+                  {% endif %}
+                  <span class="amb-name">{{ amb.full_name }}</span>
+                </div>
+              </td>
+              <td><span class="badge-position">{{ amb.political_position }}</span></td>
+              <td>{{ amb.department or '—' }}</td>
+              <td>{{ amb.faculty or '—' }}</td>
+              <td>
+                {% if amb.is_active %}
+                  <span class="badge-active">Active</span>
+                {% else %}
+                  <span class="badge-inactive">Hidden</span>
+                {% endif %}
+              </td>
+              <td style="color:#9ca3af; font-size:0.8rem;">
+                {{ amb.created_at[:10] if amb.created_at else '—' }}
+              </td>
+              <td>
+                <div class="d-flex gap-2 flex-wrap">
+                  {% if amb.is_active %}
+                    <a href="/admin/ambassadors/deactivate/{{ amb.id }}"
+                       class="btn-amber"
+                       onclick="return confirm('Hide {{ amb.full_name }} from the carousel?')">
+                      <i class="bi bi-eye-slash"></i> Hide
+                    </a>
+                  {% else %}
+                    <a href="/admin/ambassadors/activate/{{ amb.id }}"
+                       class="btn-ghost-sm">
+                      <i class="bi bi-eye"></i> Show
+                    </a>
+                  {% endif %}
+                  <a href="/admin/ambassadors/delete/{{ amb.id }}"
+                     class="btn-danger-sm"
+                     onclick="return confirm('Permanently delete {{ amb.full_name }}?')">
+                    <i class="bi bi-trash3"></i> Delete
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% else %}
+      <div class="empty-state">
+        <i class="bi bi-people"></i>
+        <p>No ambassadors yet — add your first one above.</p>
+      </div>
+      {% endif %}
+
+    </div>
+  </div><!-- end .main -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.getElementById('imgInput').addEventListener('change', function () {
+      const file = this.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const preview = document.getElementById('imgPreview');
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        document.getElementById('uploadIcon').style.display = 'none';
+        document.getElementById('uploadText').textContent = file.name;
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+</body>
+</html>

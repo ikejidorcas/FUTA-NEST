@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+</head>
 <head>
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BNGWXVNRNC"></script>
@@ -7,7 +10,6 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-BNGWXVNRNC');
 </script>
     <meta charset="UTF-8">
@@ -180,6 +182,200 @@
             font-weight: 500;
             margin-top: 4px;
         }
+
+        /* ── AMBASSADOR SECTION ───────────────────────── */
+        .ambassador-section {
+            background: #050d1f;
+            padding: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* subtle background glow */
+        .ambassador-section::before {
+            content: '';
+            position: absolute;
+            top: -100px; left: 50%;
+            transform: translateX(-50%);
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(77,166,255,0.07) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .ambassador-section .section-label {
+            color: #4da6ff;
+        }
+
+        .ambassador-section .section-title {
+            color: white;
+        }
+
+        /* Track — shows 3 cards on desktop, scrolls on mobile */
+        .amb-track {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            transition: all 0.4s ease;
+        }
+
+        /* Individual card */
+        .amb-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 32px 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .amb-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #1565c0, #4da6ff);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .amb-card:hover {
+            background: rgba(77,166,255,0.07);
+            border-color: rgba(77,166,255,0.25);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .amb-avatar-wrap {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .amb-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(77,166,255,0.4);
+            box-shadow: 0 0 0 6px rgba(77,166,255,0.08);
+        }
+
+        .amb-initials {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1565c0, #4da6ff);
+            color: white;
+            font-size: 2rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid rgba(77,166,255,0.4);
+            box-shadow: 0 0 0 6px rgba(77,166,255,0.08);
+        }
+
+        .amb-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .amb-position {
+            display: inline-block;
+            background: rgba(77,166,255,0.15);
+            border: 1px solid rgba(77,166,255,0.25);
+            color: #4da6ff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        .amb-dept {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.8rem;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Carousel nav dots */
+        .amb-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 36px;
+        }
+
+        .amb-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 0;
+        }
+
+        .amb-dot.active {
+            background: #4da6ff;
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        /* Prev/Next arrows */
+        .amb-arrows {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .amb-arrow {
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .amb-arrow:hover {
+            background: rgba(77,166,255,0.15);
+            border-color: #4da6ff;
+            color: #4da6ff;
+        }
+
+        /* Empty state */
+        .amb-empty {
+            text-align: center;
+            color: rgba(255,255,255,0.25);
+            padding: 40px 0;
+            font-size: 0.9rem;
+        }
+
+        /* Mobile: single card scroll */
+        @media (max-width: 900px) {
+            .amb-track {
+                grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            .amb-track {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* ── END AMBASSADOR SECTION ───────────────────── */
 
         .areas-section { padding: 80px 0; }
 
@@ -385,8 +581,8 @@
                             <div class="mb-4">
                                 <label class="form-label fw-semibold small">Maximum Budget (₦/year)</label>
                                 <input type="text" name="price" id="price-display" class="form-control"
-       placeholder="e.g. 150,000" required>
-<input type="hidden" name="price" id="price-actual">
+                                       placeholder="e.g. 150,000" required>
+                                <input type="hidden" name="price" id="price-actual">
                             </div>
                             <button type="submit" class="btn-search btn">
                                 Search Available Houses
@@ -417,6 +613,117 @@
             </div>
         </div>
     </section>
+
+    <!-- ── AMBASSADOR CAROUSEL ───────────────────────────────── -->
+    {% if ambassadors %}
+    <section class="ambassador-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <div class="section-label">Trusted By</div>
+                <h2 class="section-title">Our Ambassadors</h2>
+                <p style="color:rgba(255,255,255,0.4); font-size:0.9rem; margin-top:-10px;">
+                    Student leaders who endorse Rentiva across FUTA
+                </p>
+            </div>
+
+            <!-- Cards grid — JS controls which page of 3 is shown -->
+            <div class="amb-track" id="ambTrack"></div>
+
+            <!-- Dots + Arrows (only shown if more than 3 ambassadors) -->
+            <div id="ambControls" style="display:none;">
+                <div class="amb-dots" id="ambDots"></div>
+                <div class="amb-arrows">
+                    <button class="amb-arrow" onclick="ambPrev()">&#8592;</button>
+                    <button class="amb-arrow" onclick="ambNext()">&#8594;</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Ambassador data injected from Flask
+        const AMBASSADORS = [
+            {% for amb in ambassadors %}
+            {
+                name: {{ amb.full_name | tojson }},
+                position: {{ amb.political_position | tojson }},
+                department: {{ (amb.department or '') | tojson }},
+                faculty: {{ (amb.faculty or '') | tojson }},
+                image: {{ (amb.profile_image_url or '') | tojson }}
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        const PER_PAGE = 3;
+        let currentPage = 0;
+        const totalPages = Math.ceil(AMBASSADORS.length / PER_PAGE);
+
+        function getInitial(name) {
+            return name ? name.charAt(0).toUpperCase() : '?';
+        }
+
+        function renderCards() {
+            const track = document.getElementById('ambTrack');
+            const start = currentPage * PER_PAGE;
+            const slice = AMBASSADORS.slice(start, start + PER_PAGE);
+
+            track.innerHTML = slice.map(amb => `
+                <div class="amb-card">
+                    <div class="amb-avatar-wrap">
+                        ${amb.image
+                            ? `<img src="${amb.image}" class="amb-avatar" alt="${amb.name}">`
+                            : `<div class="amb-initials">${getInitial(amb.name)}</div>`
+                        }
+                    </div>
+                    <div class="amb-name">${amb.name}</div>
+                    <div class="amb-position">${amb.position}</div>
+                    ${amb.department || amb.faculty ? `
+                        <p class="amb-dept">
+                            ${amb.department}${amb.department && amb.faculty ? ' &bull; ' : ''}${amb.faculty}
+                        </p>` : ''}
+                </div>
+            `).join('');
+
+            // Update dots
+            document.querySelectorAll('.amb-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentPage);
+            });
+        }
+
+        function buildDots() {
+            if (totalPages <= 1) return;
+            const dotsEl = document.getElementById('ambDots');
+            dotsEl.innerHTML = Array.from({length: totalPages}, (_, i) =>
+                `<button class="amb-dot ${i === 0 ? 'active' : ''}" onclick="ambGoTo(${i})"></button>`
+            ).join('');
+            document.getElementById('ambControls').style.display = 'block';
+        }
+
+        function ambGoTo(page) {
+            currentPage = page;
+            renderCards();
+        }
+
+        function ambPrev() {
+            currentPage = (currentPage - 1 + totalPages) % totalPages;
+            renderCards();
+        }
+
+        function ambNext() {
+            currentPage = (currentPage + 1) % totalPages;
+            renderCards();
+        }
+
+        // Auto-advance every 5s if more than one page
+        if (totalPages > 1) {
+            setInterval(ambNext, 5000);
+        }
+
+        buildDots();
+        renderCards();
+    </script>
+    {% endif %}
+    <!-- ── END AMBASSADOR CAROUSEL ─────────────────────────── -->
 
     <!-- Areas -->
     <section class="areas-section">
@@ -497,8 +804,8 @@
                         <div class="feature-icon">
                             <svg viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                         </div>
-                       <div class="feature-title">NIN-Traceable Agents</div>
-<div class="feature-desc">Every agent verifies with a Nigerian phone number linked to their NIN. Any fraudster is fully traceable by law enforcement.</div>
+                        <div class="feature-title">NIN-Traceable Agents</div>
+                        <div class="feature-desc">Every agent verifies with a Nigerian phone number linked to their NIN. Any fraudster is fully traceable by law enforcement.</div>
                     </div>
                 </div>
             </div>
@@ -521,16 +828,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-const display = document.getElementById('price-display');
-const actual = document.getElementById('price-actual');
-
-display.addEventListener('input', function() {
-    let raw = this.value.replace(/,/g, '').replace(/[^0-9]/g, '');
-    actual.value = raw;
-    if (raw) {
-        this.value = parseInt(raw).toLocaleString('en-NG');
-    }
-});
         const display = document.getElementById('price-display');
         const actual = document.getElementById('price-actual');
         display.addEventListener('input', function() {

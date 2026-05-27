@@ -62,7 +62,12 @@ def add_security_headers(response):
 # ── HOME PAGE ────────────────────────────────────────────────────
 @app.route('/')
 def home():
-    return render_template('home.html')
+    # Fetch active ambassadors for the carousel
+    amb_response = supabase_request("GET", "ambassadors",
+                                    params={"is_active": "eq.true",
+                                            "order": "created_at.asc"})
+    ambassadors = amb_response.json() if amb_response.status_code == 200 else []
+    return render_template('home.html', ambassadors=ambassadors)
 
 # ── LISTINGS PAGE ────────────────────────────────────────────────
 @app.route('/listings')
@@ -102,15 +107,12 @@ def post_listing():
         if phone.startswith('0'):
             phone = '234' + phone[1:]
 
-        # Check if agent is blocked
         blocked_check = supabase_request("GET", "agents",
                                          params={"phone": f"eq.{phone}",
                                                  "blocked": "eq.true"})
         if blocked_check.json():
             flash('Your number has been blocked from Rentiva. Contact admin if this is a mistake.', 'danger')
             return redirect('/')
-
-        
 
         price = int(request.form.get('price', 0))
 
@@ -121,7 +123,6 @@ def post_listing():
             flash('Price seems unusually high. Please contact admin if this is correct.', 'danger')
             return redirect('/post-listing')
 
-        # Check for duplicate
         duplicate_check = supabase_request("GET", "listings",
                                            params={"phone": f"eq.{phone}",
                                                    "area": f"eq.{request.form.get('area')}",
@@ -133,21 +134,18 @@ def post_listing():
 
         flagged = price < 50000 or price > 1000000
 
-        # Upload image
         image_file = request.files.get('image')
         if image_file and image_file.filename != '':
             image_upload = cloudinary.uploader.upload(
                 image_file, folder="rentiva/images")
             image_url = image_upload.get('secure_url', '')
 
-        # Upload video
         video_file = request.files.get('video')
         if video_file and video_file.filename != '':
             video_upload = cloudinary.uploader.upload(
                 video_file, resource_type="video", folder="rentiva/videos")
             video_url = video_upload.get('secure_url', '')
 
-        # Register agent if not existing
         existing_agent = supabase_request("GET", "agents",
                                           params={"phone": f"eq.{phone}"})
         if not existing_agent.json():
@@ -446,6 +444,67 @@ def verify_agent_approve(verification_id, phone):
                      params={"phone": f"eq.{phone}"}, admin=True)
     flash('Agent verified!', 'success')
     return redirect('/admin/verifications')
+
+# ── ADMIN AMBASSADORS ─────────────────────────────────────────────
+@app.route('/admin/ambassadors')
+def admin_ambassadors():
+    if not session.get('admin'):
+        return redirect('/futanest-control-2025')
+    response = supabase_request("GET", "ambassadors",
+                                params={"order": "created_at.desc"}, admin=True)
+    ambassadors = response.json() if response.status_code == 200 else []
+    return render_template('admin_ambassadors.html', ambassadors=ambassadors)
+
+# ── ADD AMBASSADOR ────────────────────────────────────────────────
+@app.route('/admin/ambassadors/add', methods=['POST'])
+def add_ambassador():
+    if not session.get('admin'):
+        return redirect('/futanest-control-2025')
+
+    image_url = ''
+    image_file = request.files.get('profile_image')
+    if image_file and image_file.filename != '':
+        image_upload = cloudinary.uploader.upload(
+            image_file, folder="rentiva/ambassadors")
+        image_url = image_upload.get('secure_url', '')
+
+    data = {
+        "full_name": request.form.get('full_name'),
+        "political_position": request.form.get('political_position'),
+        "department": request.form.get('department') or None,
+        "faculty": request.form.get('faculty') or None,
+        "profile_image_url": image_url,
+        "is_active": True
+    }
+
+    response = supabase_request("POST", "ambassadors", data=data, admin=True)
+    if response.status_code == 201:
+        flash('Ambassador added successfully!', 'success')
+    else:
+        flash(f'Error adding ambassador: {response.text}', 'danger')
+
+    return redirect('/admin/ambassadors')
+
+# ── DEACTIVATE AMBASSADOR ─────────────────────────────────────────
+@app.route('/admin/ambassadors/deactivate/<ambassador_id>')
+def deactivate_ambassador(ambassador_id):
+    if not session.get('admin'):
+        return redirect('/futanest-control-2025')
+    supabase_request("PATCH", "ambassadors",
+                     data={"is_active": False},
+                     params={"id": f"eq.{ambassador_id}"}, admin=True)
+    flash('Ambassador deactivated!', 'success')
+    return redirect('/admin/ambassadors')
+
+# ── DELETE AMBASSADOR ─────────────────────────────────────────────
+@app.route('/admin/ambassadors/delete/<ambassador_id>')
+def delete_ambassador(ambassador_id):
+    if not session.get('admin'):
+        return redirect('/futanest-control-2025')
+    supabase_request("DELETE", "ambassadors",
+                     params={"id": f"eq.{ambassador_id}"}, admin=True)
+    flash('Ambassador deleted!', 'success')
+    return redirect('/admin/ambassadors')
 
 # ── ADMIN LOGOUT ─────────────────────────────────────────────────
 @app.route('/admin/logout')
