@@ -485,6 +485,26 @@ def add_ambassador():
 
     return redirect('/admin/ambassadors')
 
+# ── ACTIVATE AMBASSADOR ───────────────────────────────────────────
+@app.route('/admin/ambassadors/activate/<ambassador_id>')
+def activate_ambassador(ambassador_id):
+    if not session.get('admin'):
+        return redirect('/futanest-control-2025')
+    supabase_request("PATCH", "ambassadors",
+                     data={"is_active": True},
+                     params={"id": f"eq.{ambassador_id}"}, admin=True)
+    flash('Ambassador reactivated!', 'success')
+    return redirect('/admin/ambassadors')
+
+@app.route('/')
+def home():
+    amb_response = supabase_request("GET", "ambassadors",
+                                    params={"is_active": "eq.true",
+                                            "order": "created_at.asc"},
+                                    admin=True)  # ← THIS is the key fix
+    ambassadors = amb_response.json() if amb_response.status_code == 200 else []
+    return render_template('home.html', ambassadors=ambassadors)
+
 # ── DEACTIVATE AMBASSADOR ─────────────────────────────────────────
 @app.route('/admin/ambassadors/deactivate/<ambassador_id>')
 def deactivate_ambassador(ambassador_id):
