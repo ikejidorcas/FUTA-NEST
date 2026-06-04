@@ -59,15 +59,6 @@ def add_security_headers(response):
     response.headers['X-XSS-Protection'] = '1; mode=block'
     return response
 
-# ── HOME PAGE ────────────────────────────────────────────────────
-@app.route('/')
-def home():
-    # Fetch active ambassadors for the carousel
-    amb_response = supabase_request("GET", "ambassadors",
-                                    params={"is_active": "eq.true",
-                                            "order": "created_at.asc"})
-    ambassadors = amb_response.json() if amb_response.status_code == 200 else []
-    return render_template('home.html', ambassadors=ambassadors)
 
 # ── LISTINGS PAGE ────────────────────────────────────────────────
 @app.route('/listings')
