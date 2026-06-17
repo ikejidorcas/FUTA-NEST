@@ -6,6 +6,9 @@ import cloudinary
 import cloudinary.uploader
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+import random
+import string
+from datetime import datetime, timezone
 
 load_dotenv()
 
@@ -16,7 +19,8 @@ app.secret_key = os.getenv('SECRET_KEY', 'dev-secret-key-change-later')
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=["2000 per day", "200 per hour"]
+    default_limits=["2000 per day", "200 per hour"],
+    storage_uri="memory://"
 )
 
 # Supabase config
@@ -24,6 +28,10 @@ SUPABASE_URL = os.getenv('SUPABASE_URL')
 SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 SUPABASE_SERVICE_KEY = os.getenv('SUPABASE_SERVICE_KEY')
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
+
+# SMS config (Termii)
+TERMII_API_KEY = os.getenv('TERMII_API_KEY', '')
+TERMII_SENDER_ID = os.getenv('TERMII_SENDER_ID', 'Rentiva')
 
 # Cloudinary config
 cloudinary.config(
@@ -51,6 +59,74 @@ def supabase_request(method, endpoint, data=None, params=None, admin=False):
         response = requests.delete(url, headers=headers, params=params)
     return response
 
+# ── OTP HELPERS ───────────────────────────────────────────────────
+def generate_otp():
+    return ''.join(random.choices(string.digits, k=6))
+
+def send_otp_sms(phone, otp):
+    """Send OTP via Termii SMS. Falls back gracefully if not configured."""
+    if not TERMII_API_KEY:
+        print(f"[DEV] OTP for {phone}: {otp}")
+        return True
+    try:
+        payload = {
+            "to": phone,
+            "from": TERMII_SENDER_ID,
+            "sms": f"Your Rentiva verification code is: {otp}. Valid for 10 minutes. Do not share this code.",
+            "type": "plain",
+            "api_key": TERMII_API_KEY,
+            "channel": "dnd"
+        }
+        res = requests.post("https://api.ng.termii.com/api/sms/send", json=payload, timeout=10)
+        return res.status_code == 200
+    except Exception as e:
+        print(f"SMS error: {e}")
+        return False
+
+def store_otp(phone, otp):
+    """Store OTP in Supabase, invalidate old ones first."""
+    # Invalidate previous OTPs for this phone
+    supabase_request("PATCH", "otp_codes",
+                     data={"used": True},
+                     params={"phone": f"eq.{phone}", "used": "eq.false"},
+                     admin=True)
+    # Store new OTP
+    supabase_request("POST", "otp_codes",
+                     data={"phone": phone, "code": otp, "used": False},
+                     admin=True)
+
+def verify_otp(phone, code):
+    """Verify OTP — returns True if valid and not expired."""
+    res = supabase_request("GET", "otp_codes",
+                           params={
+                               "phone": f"eq.{phone}",
+                               "code": f"eq.{code}",
+                               "used": "eq.false",
+                               "order": "created_at.desc",
+                               "limit": "1"
+                           },
+                           admin=True)
+    if res.status_code != 200 or not res.json():
+        return False
+
+    record = res.json()[0]
+    # Check expiry
+    expires_str = record.get('expires_at', '')
+    if expires_str:
+        try:
+            expires = datetime.fromisoformat(expires_str.replace('Z', '+00:00'))
+            if datetime.now(timezone.utc) > expires:
+                return False
+        except Exception:
+            pass
+
+    # Mark as used
+    supabase_request("PATCH", "otp_codes",
+                     data={"used": True},
+                     params={"id": f"eq.{record['id']}"},
+                     admin=True)
+    return True
+
 # ── SECURITY HEADERS ─────────────────────────────────────────────
 @app.after_request
 def add_security_headers(response):
@@ -59,6 +135,15 @@ def add_security_headers(response):
     response.headers['X-XSS-Protection'] = '1; mode=block'
     return response
 
+# ── HOME PAGE ────────────────────────────────────────────────────
+@app.route('/')
+def home():
+    amb_response = supabase_request("GET", "ambassadors",
+                                    params={"is_active": "eq.true",
+                                            "order": "created_at.asc"},
+                                    admin=True)
+    ambassadors = amb_response.json() if amb_response.status_code == 200 else []
+    return render_template('home.html', ambassadors=ambassadors)
 
 # ── LISTINGS PAGE ────────────────────────────────────────────────
 @app.route('/listings')
@@ -66,7 +151,8 @@ def listings():
     area = request.args.get('area', '')
     max_price = request.args.get('max_price', '')
 
-    params = {"approved": "eq.true", "available": "eq.true", "order": "featured.desc,created_at.desc"}
+    params = {"approved": "eq.true", "available": "eq.true",
+              "order": "featured.desc,created_at.desc"}
     if area:
         params["area"] = f"eq.{area}"
     if max_price:
@@ -102,7 +188,7 @@ def post_listing():
                                          params={"phone": f"eq.{phone}",
                                                  "blocked": "eq.true"})
         if blocked_check.json():
-            flash('Your number has been blocked from Rentiva. Contact admin if this is a mistake.', 'danger')
+            flash('Your number has been blocked from Rentiva.', 'danger')
             return redirect('/')
 
         price = int(request.form.get('price', 0))
@@ -111,7 +197,7 @@ def post_listing():
             flash('Price seems too low. Minimum price is ₦30,000/year.', 'danger')
             return redirect('/post-listing')
         if price > 2000000:
-            flash('Price seems unusually high. Please contact admin if this is correct.', 'danger')
+            flash('Price seems unusually high.', 'danger')
             return redirect('/post-listing')
 
         duplicate_check = supabase_request("GET", "listings",
@@ -145,7 +231,8 @@ def post_listing():
                 "name": agent_name,
                 "verified": False,
                 "flagged": False,
-                "blocked": False
+                "blocked": False,
+                "verification_status": "none"
             })
 
         data = {
@@ -200,7 +287,8 @@ def agent_register():
                 "name": name,
                 "verified": False,
                 "flagged": False,
-                "blocked": False
+                "blocked": False,
+                "verification_status": "none"
             })
 
         session['agent_phone'] = phone
@@ -257,28 +345,205 @@ def mark_taken(listing_id):
 def feature():
     return render_template('feature.html')
 
-# ── VERIFY AGENT PAGE ─────────────────────────────────────────────
-@app.route('/verify', methods=['GET', 'POST'])
-def verify_agent():
-    if request.method == 'POST':
-        agent_id_file = request.files.get('agent_id')
-        agent_id_url = ''
-        if agent_id_file and agent_id_file.filename != '':
-            id_upload = cloudinary.uploader.upload(
-                agent_id_file, folder="rentiva/ids")
-            agent_id_url = id_upload.get('secure_url', '')
+# ══════════════════════════════════════════════════════════════════
+# VERIFIED AGENT SYSTEM
+# ══════════════════════════════════════════════════════════════════
 
-        data = {
-            "agent_name": request.form.get('agent_name'),
-            "phone": request.form.get('phone'),
-            "id_type": request.form.get('id_type'),
-            "id_url": agent_id_url,
-            "verified": False
-        }
-        supabase_request("POST", "verifications", data=data)
-        flash('Verification submitted! We will review and contact you within 24 hours.', 'success')
+# ── STEP 1: VERIFY PAGE (entry + status check) ───────────────────
+@app.route('/verify', methods=['GET', 'POST'])
+@limiter.limit("20 per hour")
+def verify_agent():
+    # Check if agent is looking up their status
+    if request.method == 'GET':
+        phone_lookup = request.args.get('phone', '').strip().replace(' ', '')
+        if phone_lookup:
+            if phone_lookup.startswith('0'):
+                phone_lookup = '234' + phone_lookup[1:]
+            existing = supabase_request("GET", "verifications",
+                                        params={"phone": f"eq.{phone_lookup}",
+                                                "order": "created_at.desc",
+                                                "limit": "1"},
+                                        admin=True)
+            ver = existing.json()[0] if existing.json() else None
+            return render_template('verify.html', status_check=ver,
+                                   phone_checked=phone_lookup)
+        return render_template('verify.html')
+
+    # POST — initiate verification, send OTP
+    phone = request.form.get('phone', '').strip().replace(' ', '')
+    if phone.startswith('0'):
+        phone = '234' + phone[1:]
+
+    agent_name = request.form.get('agent_name', '').strip()
+    email = request.form.get('email', '').strip()
+
+    if not phone or not agent_name:
+        flash('Name and phone number are required.', 'danger')
         return redirect('/verify')
-    return render_template('verify.html')
+
+    # Check if already approved
+    existing_ver = supabase_request("GET", "verifications",
+                                    params={"phone": f"eq.{phone}",
+                                            "status": "eq.approved"},
+                                    admin=True)
+    if existing_ver.json():
+        flash('This number is already verified on Rentiva!', 'success')
+        return redirect('/verify')
+
+    # Generate and send OTP
+    otp = generate_otp()
+    store_otp(phone, otp)
+    sms_sent = send_otp_sms(phone, otp)
+
+    # Store details in session for next step
+    session['verify_phone'] = phone
+    session['verify_name'] = agent_name
+    session['verify_email'] = email
+
+    if sms_sent:
+        flash(f'A 6-digit code has been sent to {phone}. Enter it below.', 'success')
+    else:
+        flash('OTP sent! Check your phone for the 6-digit code.', 'success')
+
+    return render_template('verify.html', step='otp', phone=phone)
+
+# ── STEP 2: VERIFY OTP ───────────────────────────────────────────
+@app.route('/verify/confirm-otp', methods=['POST'])
+@limiter.limit("10 per hour")
+def confirm_otp():
+    phone = session.get('verify_phone', '')
+    otp_entered = request.form.get('otp', '').strip()
+
+    if not phone:
+        flash('Session expired. Please start again.', 'danger')
+        return redirect('/verify')
+
+    if not verify_otp(phone, otp_entered):
+        flash('Invalid or expired code. Please try again.', 'danger')
+        return render_template('verify.html', step='otp', phone=phone)
+
+    session['otp_verified'] = True
+    flash('Phone number verified! Now upload your ID and selfie.', 'success')
+    return render_template('verify.html', step='upload',
+                           phone=phone,
+                           agent_name=session.get('verify_name', ''))
+
+# ── STEP 3: UPLOAD ID + SELFIE ───────────────────────────────────
+@app.route('/verify/upload', methods=['POST'])
+@limiter.limit("5 per hour")
+def verify_upload():
+    if not session.get('otp_verified'):
+        flash('Please verify your phone number first.', 'danger')
+        return redirect('/verify')
+
+    phone = session.get('verify_phone', '')
+    agent_name = session.get('verify_name', '')
+    email = session.get('verify_email', '')
+
+    if not phone:
+        flash('Session expired. Please start again.', 'danger')
+        return redirect('/verify')
+
+    agent_id_url = ''
+    selfie_url = ''
+
+    # Upload government ID
+    agent_id_file = request.files.get('agent_id')
+    if agent_id_file and agent_id_file.filename != '':
+        id_upload = cloudinary.uploader.upload(
+            agent_id_file,
+            folder="rentiva/ids",
+            resource_type="image",
+            access_mode="authenticated"  # private — not publicly guessable
+        )
+        agent_id_url = id_upload.get('secure_url', '')
+    else:
+        flash('Government ID is required.', 'danger')
+        return render_template('verify.html', step='upload',
+                               phone=phone, agent_name=agent_name)
+
+    # Upload selfie
+    selfie_file = request.files.get('selfie')
+    if selfie_file and selfie_file.filename != '':
+        selfie_upload = cloudinary.uploader.upload(
+            selfie_file,
+            folder="rentiva/selfies",
+            resource_type="image",
+            access_mode="authenticated"
+        )
+        selfie_url = selfie_upload.get('secure_url', '')
+    else:
+        flash('Selfie photo is required.', 'danger')
+        return render_template('verify.html', step='upload',
+                               phone=phone, agent_name=agent_name)
+
+    # Save verification record
+    ver_data = {
+        "agent_name": agent_name,
+        "phone": phone,
+        "id_type": request.form.get('id_type', 'government_id'),
+        "id_url": agent_id_url,
+        "selfie_url": selfie_url,
+        "verified": False,
+        "status": "pending",
+        "otp_verified": True
+    }
+
+    # Add email to agents table if provided
+    if email:
+        ver_data["email"] = email
+        supabase_request("PATCH", "agents",
+                         data={"email": email},
+                         params={"phone": f"eq.{phone}"},
+                         admin=True)
+
+    # Check if pending already exists — update instead of duplicate
+    existing = supabase_request("GET", "verifications",
+                                params={"phone": f"eq.{phone}",
+                                        "status": "eq.pending"},
+                                admin=True)
+    if existing.json():
+        supabase_request("PATCH", "verifications",
+                         data=ver_data,
+                         params={"phone": f"eq.{phone}",
+                                 "status": "eq.pending"},
+                         admin=True)
+    else:
+        supabase_request("POST", "verifications", data=ver_data, admin=True)
+
+    # Update agent verification_status to pending
+    supabase_request("PATCH", "agents",
+                     data={"verification_status": "pending"},
+                     params={"phone": f"eq.{phone}"},
+                     admin=True)
+
+    # Clear session verify flags
+    session.pop('otp_verified', None)
+    session.pop('verify_phone', None)
+    session.pop('verify_name', None)
+    session.pop('verify_email', None)
+
+    flash('Verification submitted! We will review within 24 hours.', 'success')
+    return render_template('verify.html', step='done', phone=phone)
+
+# ── RESEND OTP ───────────────────────────────────────────────────
+@app.route('/verify/resend-otp', methods=['POST'])
+@limiter.limit("3 per hour")
+def resend_otp():
+    phone = session.get('verify_phone', '')
+    if not phone:
+        flash('Session expired. Please start again.', 'danger')
+        return redirect('/verify')
+
+    otp = generate_otp()
+    store_otp(phone, otp)
+    send_otp_sms(phone, otp)
+    flash('A new code has been sent to your phone.', 'success')
+    return render_template('verify.html', step='otp', phone=phone)
+
+# ══════════════════════════════════════════════════════════════════
+# ADMIN ROUTES
+# ══════════════════════════════════════════════════════════════════
 
 # ── ADMIN LOGIN ──────────────────────────────────────────────────
 @app.route('/futanest-control-2025', methods=['GET', 'POST'])
@@ -304,13 +569,17 @@ def admin_dashboard():
     pending_response = supabase_request("GET", "listings",
                                         params={"approved": "eq.false",
                                                 "order": "created_at.desc"}, admin=True)
+    pending_ver_response = supabase_request("GET", "verifications",
+                                            params={"status": "eq.pending"}, admin=True)
 
     all_listings = all_response.json() if all_response.status_code == 200 else []
     pending = pending_response.json() if pending_response.status_code == 200 else []
+    pending_verifications_count = len(pending_ver_response.json()) if pending_ver_response.status_code == 200 else 0
 
     return render_template('admin_dashboard.html',
                            all_listings=all_listings,
-                           pending=pending)
+                           pending=pending,
+                           pending_verifications_count=pending_verifications_count)
 
 # ── APPROVE LISTING ──────────────────────────────────────────────
 @app.route('/admin/approve/<listing_id>')
@@ -417,23 +686,78 @@ def unblock_agent(phone):
 def admin_verifications():
     if not session.get('admin'):
         return redirect('/futanest-control-2025')
-    response = supabase_request("GET", "verifications",
-                                params={"order": "created_at.desc"}, admin=True)
-    verifications = response.json() if response.status_code == 200 else []
-    return render_template('admin_verifications.html', verifications=verifications)
 
-# ── VERIFY AGENT APPROVE ──────────────────────────────────────────
+    status_filter = request.args.get('status', 'pending')
+    params = {"order": "created_at.desc"}
+    if status_filter != 'all':
+        params["status"] = f"eq.{status_filter}"
+
+    response = supabase_request("GET", "verifications", params=params, admin=True)
+    verifications = response.json() if response.status_code == 200 else []
+
+    # Count by status for tabs
+    all_ver = supabase_request("GET", "verifications",
+                               params={"order": "created_at.desc"}, admin=True)
+    all_v = all_ver.json() if all_ver.status_code == 200 else []
+    counts = {
+        "all": len(all_v),
+        "pending": sum(1 for v in all_v if v.get('status') == 'pending'),
+        "approved": sum(1 for v in all_v if v.get('status') == 'approved'),
+        "rejected": sum(1 for v in all_v if v.get('status') == 'rejected'),
+    }
+
+    return render_template('admin_verifications.html',
+                           verifications=verifications,
+                           status_filter=status_filter,
+                           counts=counts)
+
+# ── APPROVE VERIFICATION ──────────────────────────────────────────
 @app.route('/admin/verify-agent/<verification_id>/<phone>')
 def verify_agent_approve(verification_id, phone):
     if not session.get('admin'):
         return redirect('/futanest-control-2025')
+
+    now_iso = datetime.now(timezone.utc).isoformat()
+
     supabase_request("PATCH", "verifications",
-                     data={"verified": True},
+                     data={"verified": True, "status": "approved",
+                           "reviewed_at": now_iso},
                      params={"id": f"eq.{verification_id}"}, admin=True)
+
+    supabase_request("PATCH", "agents",
+                     data={"verified": True, "verification_status": "approved",
+                           "verified_at": now_iso},
+                     params={"phone": f"eq.{phone}"}, admin=True)
+
     supabase_request("PATCH", "listings",
                      data={"verified": True},
                      params={"phone": f"eq.{phone}"}, admin=True)
-    flash('Agent verified!', 'success')
+
+    flash(f'Agent {phone} has been verified!', 'success')
+    return redirect('/admin/verifications')
+
+# ── REJECT VERIFICATION ───────────────────────────────────────────
+@app.route('/admin/reject-agent/<verification_id>/<phone>', methods=['POST'])
+def verify_agent_reject(verification_id, phone):
+    if not session.get('admin'):
+        return redirect('/futanest-control-2025')
+
+    reason = request.form.get('rejection_reason', 'Documents could not be verified.')
+    now_iso = datetime.now(timezone.utc).isoformat()
+
+    supabase_request("PATCH", "verifications",
+                     data={"verified": False, "status": "rejected",
+                           "reviewed_at": now_iso,
+                           "rejection_reason": reason},
+                     params={"id": f"eq.{verification_id}"}, admin=True)
+
+    supabase_request("PATCH", "agents",
+                     data={"verified": False,
+                           "verification_status": "rejected",
+                           "rejection_reason": reason},
+                     params={"phone": f"eq.{phone}"}, admin=True)
+
+    flash(f'Verification rejected for {phone}.', 'warning')
     return redirect('/admin/verifications')
 
 # ── ADMIN AMBASSADORS ─────────────────────────────────────────────
@@ -476,26 +800,6 @@ def add_ambassador():
 
     return redirect('/admin/ambassadors')
 
-# ── ACTIVATE AMBASSADOR ───────────────────────────────────────────
-@app.route('/admin/ambassadors/activate/<ambassador_id>')
-def activate_ambassador(ambassador_id):
-    if not session.get('admin'):
-        return redirect('/futanest-control-2025')
-    supabase_request("PATCH", "ambassadors",
-                     data={"is_active": True},
-                     params={"id": f"eq.{ambassador_id}"}, admin=True)
-    flash('Ambassador reactivated!', 'success')
-    return redirect('/admin/ambassadors')
-
-@app.route('/')
-def home():
-    amb_response = supabase_request("GET", "ambassadors",
-                                    params={"is_active": "eq.true",
-                                            "order": "created_at.asc"},
-                                    admin=True)  # ← THIS is the key fix
-    ambassadors = amb_response.json() if amb_response.status_code == 200 else []
-    return render_template('home.html', ambassadors=ambassadors)
-
 # ── DEACTIVATE AMBASSADOR ─────────────────────────────────────────
 @app.route('/admin/ambassadors/deactivate/<ambassador_id>')
 def deactivate_ambassador(ambassador_id):
@@ -505,6 +809,17 @@ def deactivate_ambassador(ambassador_id):
                      data={"is_active": False},
                      params={"id": f"eq.{ambassador_id}"}, admin=True)
     flash('Ambassador deactivated!', 'success')
+    return redirect('/admin/ambassadors')
+
+# ── ACTIVATE AMBASSADOR ───────────────────────────────────────────
+@app.route('/admin/ambassadors/activate/<ambassador_id>')
+def activate_ambassador(ambassador_id):
+    if not session.get('admin'):
+        return redirect('/futanest-control-2025')
+    supabase_request("PATCH", "ambassadors",
+                     data={"is_active": True},
+                     params={"id": f"eq.{ambassador_id}"}, admin=True)
+    flash('Ambassador reactivated!', 'success')
     return redirect('/admin/ambassadors')
 
 # ── DELETE AMBASSADOR ─────────────────────────────────────────────

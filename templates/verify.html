@@ -1,130 +1,773 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rentiva — Get Verified</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        * { font-family: 'Inter', sans-serif; }
-        body { background: linear-gradient(135deg, #050d1f, #0a3d6b); min-height: 100vh; }
-        .navbar { background-color: #050d1f; padding: 16px 40px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .brand-name { font-size: 1.5rem; font-weight: 900; letter-spacing: 3px; color: #4da6ff; text-decoration: none; text-transform: uppercase; }
-        .page-wrapper { padding: 60px 0; }
-        .form-card { background: white; border-radius: 20px; padding: 40px; max-width: 580px; margin: 0 auto; box-shadow: 0 24px 80px rgba(0,0,0,0.4); }
-        .page-badge { display: inline-block; background: #e8f5e9; border: 1px solid #a5d6a7; color: #2e7d32; border-radius: 20px; padding: 6px 16px; font-size: 0.8rem; font-weight: 600; letter-spacing: 1px; margin-bottom: 14px; }
-        h2 { font-weight: 800; color: #050d1f; margin-bottom: 8px; }
-        .subtitle { color: #7a8ca0; font-size: 0.9rem; margin-bottom: 28px; line-height: 1.6; }
-        .benefit-item { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
-        .benefit-icon { width: 36px; height: 36px; background: #e8f5e9; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1rem; }
-        .benefit-title { font-weight: 700; color: #050d1f; font-size: 0.9rem; margin-bottom: 2px; }
-        .benefit-desc { color: #7a8ca0; font-size: 0.82rem; }
-        .divider { border: none; border-top: 2px solid #f0f4ff; margin: 24px 0; }
-        .form-label { font-weight: 600; font-size: 0.88rem; color: #2d3748; }
-        .form-control, .form-select { border: 2px solid #e8edf5; border-radius: 10px; padding: 11px 14px; }
-        .form-control:focus, .form-select:focus { border-color: #4da6ff; box-shadow: none; }
-        .upload-box { border: 2px dashed #c8d9f5; border-radius: 10px; padding: 20px; text-align: center; background: #f8faff; cursor: pointer; }
-        .upload-box input { display: none; }
-        .upload-label { font-weight: 600; font-size: 0.9rem; color: #1565c0; margin-bottom: 4px; }
-        .upload-hint { font-size: 0.8rem; color: #7a8ca0; }
-        .upload-filename { font-size: 0.82rem; color: #1565c0; margin-top: 8px; font-weight: 500; }
-        .btn-submit { background: linear-gradient(135deg, #1565c0, #1e88e5); color: white; border: none; border-radius: 12px; padding: 15px; font-weight: 700; font-size: 1rem; width: 100%; }
-        .btn-submit:hover { opacity: 0.9; color: white; }
-        .note { font-size: 0.8rem; color: #7a8ca0; text-align: center; margin-top: 12px; }
-        .alert-success { background: #e8f5e9; border: 1px solid #a5d6a7; color: #2e7d32; border-radius: 10px; padding: 14px 18px; font-weight: 500; margin-bottom: 20px; }
-        .alert-danger { background: #ffebee; border: 1px solid #ef9a9a; color: #c62828; border-radius: 10px; padding: 14px 18px; font-weight: 500; margin-bottom: 20px; }
-        footer { background: #030810; color: #4a6080; padding: 24px 0; text-align: center; font-size: 0.88rem; }
-        footer span { color: #4da6ff; font-weight: 700; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rentiva — Agent Verification</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #1565c0;
+      --blue-light: #4da6ff;
+      --orange: #f6a623;
+      --dark: #050d1f;
+      --body-bg: #f8faff;
+    }
+
+    * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
+    body { background: var(--body-bg); margin: 0; }
+
+    /* NAVBAR */
+    .navbar {
+      background: var(--dark);
+      padding: 10px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .navbar-logo { height: 44px; width: auto; }
+    .navbar a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.875rem; }
+    .navbar a:hover { color: white; }
+
+    /* PAGE HERO */
+    .page-hero {
+      background: var(--dark);
+      padding: 48px 0 40px;
+      text-align: center;
+    }
+
+    .page-hero h1 {
+      color: white;
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .page-hero p {
+      color: rgba(255,255,255,0.45);
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    /* PROGRESS STEPS */
+    .steps {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0;
+      margin-top: 32px;
+      padding: 0 20px;
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .step-circle {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.4);
+      transition: all 0.3s;
+    }
+
+    .step-circle.active {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: white;
+    }
+
+    .step-circle.done {
+      background: #22c55e;
+      border-color: #22c55e;
+      color: white;
+    }
+
+    .step-label {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.3);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .step-label.active { color: var(--orange); }
+    .step-label.done { color: #22c55e; }
+
+    .step-line {
+      width: 60px;
+      height: 2px;
+      background: rgba(255,255,255,0.1);
+      margin: 0 8px;
+      margin-bottom: 22px;
+    }
+
+    .step-line.done { background: #22c55e; }
+
+    /* MAIN */
+    .main { padding: 40px 0 60px; }
+
+    /* CARD */
+    .verify-card {
+      background: white;
+      border-radius: 16px;
+      padding: 36px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+      border: 1px solid #e8edf5;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    .verify-card h4 {
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+
+    .verify-card .subtitle {
+      color: #6b7280;
+      font-size: 0.875rem;
+      margin-bottom: 28px;
+    }
+
+    /* FORM */
+    .form-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+
+    .form-control, .form-select {
+      border: 1.5px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 0.875rem;
+      color: var(--dark);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(246,166,35,0.12);
+      outline: none;
+    }
+
+    .btn-primary-rentiva {
+      background: var(--orange);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 28px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      width: 100%;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+
+    .btn-primary-rentiva:hover {
+      background: #e0951a;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary-rentiva {
+      background: #f3f4f6;
+      color: #374151;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 28px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .btn-secondary-rentiva:hover { background: #e5e7eb; color: #111827; }
+
+    /* OTP INPUT */
+    .otp-inputs {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 24px 0;
+    }
+
+    .otp-digit {
+      width: 52px; height: 60px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-align: center;
+      color: var(--dark);
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .otp-digit:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(246,166,35,0.12);
+    }
+
+    /* UPLOAD AREAS */
+    .upload-zone {
+      border: 2px dashed #e5e7eb;
+      border-radius: 12px;
+      padding: 28px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      background: #fafafa;
+    }
+
+    .upload-zone:hover {
+      border-color: var(--orange);
+      background: rgba(246,166,35,0.02);
+    }
+
+    .upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .upload-zone .upload-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .upload-zone p {
+      color: #9ca3af;
+      font-size: 0.82rem;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .upload-zone strong { color: #374151; }
+
+    .upload-preview {
+      width: 80px; height: 80px;
+      border-radius: 10px;
+      object-fit: cover;
+      display: none;
+      margin: 8px auto 0;
+      border: 2px solid var(--orange);
+    }
+
+    /* STATUS BADGE */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .status-pending {
+      background: rgba(245,158,11,0.1);
+      color: #b45309;
+      border: 1px solid rgba(245,158,11,0.2);
+    }
+
+    .status-approved {
+      background: rgba(34,197,94,0.1);
+      color: #15803d;
+      border: 1px solid rgba(34,197,94,0.2);
+    }
+
+    .status-rejected {
+      background: rgba(239,68,68,0.1);
+      color: #dc2626;
+      border: 1px solid rgba(239,68,68,0.2);
+    }
+
+    /* INFO BOX */
+    .info-box {
+      background: rgba(77,166,255,0.07);
+      border: 1px solid rgba(77,166,255,0.15);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.82rem;
+      color: #1e40af;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .info-box.orange {
+      background: rgba(246,166,35,0.07);
+      border-color: rgba(246,166,35,0.2);
+      color: #92400e;
+    }
+
+    /* STATUS CHECK FORM */
+    .status-check-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .status-check-form input {
+      flex: 1;
+    }
+
+    .status-check-form button {
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 11px 20px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* SUCCESS STATE */
+    .success-state {
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .success-icon {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: rgba(34,197,94,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 2rem;
+    }
+
+    /* VERIFIED BADGE PREVIEW */
+    .verified-preview {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.2);
+      color: #15803d;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 12px;
+    }
+
+    /* DIVIDER */
+    .divider {
+      border: none;
+      border-top: 1px solid #f3f4f6;
+      margin: 24px 0;
+    }
+
+    /* FLASH */
+    .alert {
+      border: none;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .alert-success { background: rgba(34,197,94,0.1); color: #14532d; }
+    .alert-danger  { background: rgba(239,68,68,0.1);  color: #7f1d1d; }
+    .alert-warning { background: rgba(245,158,11,0.1); color: #78350f; }
+
+    footer {
+      background: #030810;
+      color: #4a6080;
+      padding: 24px 0;
+      text-align: center;
+      font-size: 0.875rem;
+    }
+
+    footer span { color: var(--orange); font-weight: 700; }
+
+    @media (max-width: 600px) {
+      .navbar { padding: 10px 16px; }
+      .verify-card { padding: 24px 18px; margin: 0 16px; }
+      .step-line { width: 30px; }
+      .otp-digit { width: 42px; height: 52px; font-size: 1.2rem; }
+    }
+  </style>
 </head>
 <body>
-    <nav class="navbar d-flex justify-content-between align-items-center">
-        <a href="/" class="brand-name">RENTIVA</a>
-        <a href="/listings" style="color:#8ab4d4;text-decoration:none;font-size:0.9rem;">View Listings</a>
-    </nav>
 
-    <div class="page-wrapper">
-        <div class="container">
-            <div class="form-card">
-                <div class="page-badge">✓ Agent Verification</div>
-                <h2>Get a Verified Badge</h2>
-                <p class="subtitle">Verified agents get more student inquiries. Verification is optional but highly recommended.</p>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a href="/"><img src="/static/rentiva-logo.png" alt="Rentiva" class="navbar-logo"></a>
+    <a href="/listings">Browse Listings</a>
+  </nav>
 
-                <div class="benefit-item">
-                    <div class="benefit-icon">✓</div>
-                    <div>
-                        <div class="benefit-title">Green Verified Badge on your listings</div>
-                        <div class="benefit-desc">Students can see you are a trusted agent</div>
-                    </div>
-                </div>
-                <div class="benefit-item">
-                    <div class="benefit-icon">🔝</div>
-                    <div>
-                        <div class="benefit-title">Higher ranking in search results</div>
-                        <div class="benefit-desc">Verified listings appear above unverified ones</div>
-                    </div>
-                </div>
-                <div class="benefit-item">
-                    <div class="benefit-icon">📞</div>
-                    <div>
-                        <div class="benefit-title">More student contacts</div>
-                        <div class="benefit-desc">Students prefer contacting verified agents</div>
-                    </div>
-                </div>
+  <!-- PAGE HERO -->
+  <div class="page-hero">
+    <h1>Agent Verification</h1>
+    <p>Get verified to build trust with FUTA students and boost your listings.</p>
 
-                <hr class="divider">
-
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                        <div class="alert-{{ category }}">{{ message }}</div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-
-                <form action="/verify" method="POST" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label class="form-label">Your Full Name</label>
-                        <input type="text" name="agent_name" class="form-control"
-                               placeholder="As it appears on your ID" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Your Phone Number</label>
-                        <input type="text" name="phone" class="form-control"
-                               placeholder="Same number used on your listing" required>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label">ID Type</label>
-                        <select name="id_type" class="form-select" required>
-                            <option value="">-- Select ID type --</option>
-                            <option value="NIN Slip">NIN Slip</option>
-                            <option value="National ID Card">National ID Card</option>
-                            <option value="Driver's Licence">Driver's Licence</option>
-                            <option value="Voter's Card">Voter's Card</option>
-                            <option value="Student ID">Student ID</option>
-                            <option value="Staff ID">Staff ID</option>
-                        </select>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label">Upload ID Photo</label>
-                        <label class="upload-box d-block" for="id-input">
-                            <div class="upload-label">Click to upload your ID</div>
-                            <div class="upload-hint">Take a clear photo of your ID with your phone</div>
-                            <div class="upload-filename" id="id-name"></div>
-                            <input type="file" id="id-input" name="agent_id" accept="image/*" required
-                                   onchange="document.getElementById('id-name').textContent = this.files[0]?.name || ''">
-                        </label>
-                    </div>
-                    <button type="submit" class="btn-submit btn">Submit for Verification</button>
-                    <p class="note">Your ID is only seen by the Rentiva admin and is kept private.</p>
-                </form>
-            </div>
+    <!-- PROGRESS STEPS -->
+    {% set current_step = step if step is defined else 'form' %}
+    <div class="steps mt-4">
+      <div class="step">
+        <div class="step-circle {% if current_step in ['otp','upload','done'] %}done{% elif current_step == 'form' %}active{% endif %}">
+          {% if current_step in ['otp','upload','done'] %}✓{% else %}1{% endif %}
         </div>
+        <span class="step-label {% if current_step in ['otp','upload','done'] %}done{% elif current_step == 'form' %}active{% endif %}">Details</span>
+      </div>
+      <div class="step-line {% if current_step in ['otp','upload','done'] %}done{% endif %}"></div>
+      <div class="step">
+        <div class="step-circle {% if current_step in ['upload','done'] %}done{% elif current_step == 'otp' %}active{% endif %}">
+          {% if current_step in ['upload','done'] %}✓{% else %}2{% endif %}
+        </div>
+        <span class="step-label {% if current_step in ['upload','done'] %}done{% elif current_step == 'otp' %}active{% endif %}">Phone OTP</span>
+      </div>
+      <div class="step-line {% if current_step in ['upload','done'] %}done{% endif %}"></div>
+      <div class="step">
+        <div class="step-circle {% if current_step == 'done' %}done{% elif current_step == 'upload' %}active{% endif %}">
+          {% if current_step == 'done' %}✓{% else %}3{% endif %}
+        </div>
+        <span class="step-label {% if current_step == 'done' %}done{% elif current_step == 'upload' %}active{% endif %}">Documents</span>
+      </div>
+      <div class="step-line {% if current_step == 'done' %}done{% endif %}"></div>
+      <div class="step">
+        <div class="step-circle {% if current_step == 'done' %}done{% endif %}">
+          {% if current_step == 'done' %}✓{% else %}4{% endif %}
+        </div>
+        <span class="step-label {% if current_step == 'done' %}done{% endif %}">Review</span>
+      </div>
     </div>
+  </div>
 
-    <footer>
-        <span>RENTIVA</span> &mdash; Student Housing Platform &copy; 2025
-    </footer>
+  <!-- MAIN -->
+  <div class="main">
+    <div class="container">
+
+      <!-- FLASH MESSAGES -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div style="max-width:560px; margin:0 auto 20px;">
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- STEP 1: INITIAL FORM                              -->
+      <!-- ══════════════════════════════════════════════════ -->
+      {% if not step or step == 'form' %}
+
+      <!-- Status check -->
+      <div class="verify-card mb-3">
+        <p style="font-size:0.82rem; color:#6b7280; margin-bottom:10px; font-weight:600;">Already applied? Check your status:</p>
+        <form action="/verify" method="GET" class="status-check-form">
+          <input type="text" name="phone" class="form-control"
+                 placeholder="Enter your phone (e.g. 08012345678)"
+                 value="{{ phone_checked or '' }}">
+          <button type="submit">Check</button>
+        </form>
+
+        <!-- Status result -->
+        {% if status_check %}
+          <div style="padding:16px; background:#f9fafb; border-radius:10px; margin-top:4px;">
+            <p style="font-size:0.82rem; color:#374151; margin-bottom:8px; font-weight:600;">
+              Status for {{ phone_checked }}:
+            </p>
+            {% if status_check.status == 'approved' %}
+              <span class="status-badge status-approved">✓ Verified Agent</span>
+              <p style="font-size:0.8rem; color:#6b7280; margin-top:8px;">
+                Your account was verified. All your listings now show the verified badge.
+              </p>
+            {% elif status_check.status == 'pending' %}
+              <span class="status-badge status-pending">⏳ Under Review</span>
+              <p style="font-size:0.8rem; color:#6b7280; margin-top:8px;">
+                Your documents are being reviewed. This usually takes up to 24 hours.
+              </p>
+            {% elif status_check.status == 'rejected' %}
+              <span class="status-badge status-rejected">✗ Rejected</span>
+              {% if status_check.rejection_reason %}
+                <p style="font-size:0.8rem; color:#6b7280; margin-top:8px;">
+                  <strong>Reason:</strong> {{ status_check.rejection_reason }}
+                </p>
+              {% endif %}
+              <p style="font-size:0.8rem; color:#6b7280;">
+                You can resubmit your verification below with corrected documents.
+              </p>
+            {% endif %}
+          </div>
+        {% elif phone_checked %}
+          <div class="info-box mt-2">
+            No verification found for this number. You can apply below.
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Main form -->
+      <div class="verify-card">
+        <h4>Apply for Verification</h4>
+        <p class="subtitle">We'll send a code to your phone to confirm your identity, then review your documents within 24 hours.</p>
+
+        <div class="info-box">
+          ✓ Verified agents get a <strong>blue shield badge</strong> on all listings<br>
+          ✓ Students trust verified agents more — get more inquiries<br>
+          ✓ Free to apply — takes less than 3 minutes
+        </div>
+
+        <form action="/verify" method="POST">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Full Name <span style="color:#ef4444">*</span></label>
+              <input type="text" name="agent_name" class="form-control"
+                     placeholder="Your full legal name" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Phone Number <span style="color:#ef4444">*</span></label>
+              <input type="tel" name="phone" class="form-control"
+                     placeholder="e.g. 08012345678" required>
+              <small style="color:#9ca3af; font-size:0.75rem;">We'll send a verification code to this number</small>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Email Address <span style="color:#9ca3af; font-weight:400; font-size:0.72rem;">(optional)</span></label>
+              <input type="email" name="email" class="form-control"
+                     placeholder="your@email.com">
+            </div>
+            <div class="col-12">
+              <button type="submit" class="btn-primary-rentiva">
+                Send Verification Code →
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- STEP 2: OTP ENTRY                                 -->
+      <!-- ══════════════════════════════════════════════════ -->
+      {% elif step == 'otp' %}
+
+      <div class="verify-card">
+        <h4>Enter Verification Code</h4>
+        <p class="subtitle">We sent a 6-digit code to <strong>{{ phone }}</strong>. Enter it below.</p>
+
+        <form action="/verify/confirm-otp" method="POST">
+          <!-- Hidden OTP field that gets filled by JS -->
+          <input type="hidden" name="otp" id="otpHidden">
+
+          <!-- Visual digit inputs -->
+          <div class="otp-inputs">
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+            <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]">
+          </div>
+
+          <button type="submit" class="btn-primary-rentiva">Verify Code</button>
+        </form>
+
+        <hr class="divider">
+
+        <div style="text-align:center;">
+          <p style="color:#6b7280; font-size:0.82rem; margin-bottom:10px;">Didn't receive the code?</p>
+          <form action="/verify/resend-otp" method="POST" style="display:inline;">
+            <button type="submit" class="btn-secondary-rentiva" style="width:auto; padding:8px 20px; font-size:0.82rem;">
+              Resend Code
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- STEP 3: DOCUMENT UPLOAD                           -->
+      <!-- ══════════════════════════════════════════════════ -->
+      {% elif step == 'upload' %}
+
+      <div class="verify-card">
+        <h4>Upload Your Documents</h4>
+        <p class="subtitle">Phone verified ✓ — now upload your government ID and a selfie holding it.</p>
+
+        <div class="info-box orange">
+          📋 Accepted IDs: NIN slip, Voter's card, Driver's licence, International passport, Student ID<br>
+          🤳 Selfie must clearly show your face AND the ID together in one photo
+        </div>
+
+        <form action="/verify/upload" method="POST" enctype="multipart/form-data">
+          <div class="mb-4">
+            <label class="form-label">ID Type <span style="color:#ef4444">*</span></label>
+            <select name="id_type" class="form-select" required>
+              <option value="">Select ID type</option>
+              <option value="nin">NIN Slip</option>
+              <option value="voters_card">Voter's Card</option>
+              <option value="drivers_licence">Driver's Licence</option>
+              <option value="passport">International Passport</option>
+              <option value="student_id">Student ID</option>
+            </select>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">Government ID Photo <span style="color:#ef4444">*</span></label>
+            <div class="upload-zone" id="idZone">
+              <input type="file" name="agent_id" accept="image/*" id="idInput" required>
+              <div class="upload-icon">🪪</div>
+              <p><strong>Click to upload your ID</strong><br>JPG, PNG — clear photo, all text readable</p>
+              <img id="idPreview" class="upload-preview" src="" alt="ID Preview">
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">Selfie with ID <span style="color:#ef4444">*</span></label>
+            <div class="upload-zone" id="selfieZone">
+              <input type="file" name="selfie" accept="image/*" id="selfieInput" required>
+              <div class="upload-icon">🤳</div>
+              <p><strong>Click to upload your selfie</strong><br>Hold your ID next to your face — both must be clearly visible</p>
+              <img id="selfiePreview" class="upload-preview" src="" alt="Selfie Preview">
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary-rentiva">
+            Submit for Review →
+          </button>
+        </form>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════ -->
+      <!-- STEP 4: DONE                                      -->
+      <!-- ══════════════════════════════════════════════════ -->
+      {% elif step == 'done' %}
+
+      <div class="verify-card">
+        <div class="success-state">
+          <div class="success-icon">🎉</div>
+          <h4 style="font-size:1.3rem;">Verification Submitted!</h4>
+          <p style="color:#6b7280; font-size:0.9rem; margin-bottom:20px;">
+            Your documents are under review. We'll process your application within <strong>24 hours</strong>.
+          </p>
+
+          <div class="info-box" style="text-align:left;">
+            <strong>What happens next:</strong><br>
+            1. Our team reviews your ID and selfie<br>
+            2. Your listings get the verified badge once approved<br>
+            3. Check your status anytime using your phone number above
+          </div>
+
+          <div class="verified-preview">
+            ✓ Verified Agent — coming soon to your profile
+          </div>
+
+          <div style="margin-top:28px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+            <a href="/listings" class="btn-secondary-rentiva" style="width:auto; padding:11px 24px;">
+              Browse Listings
+            </a>
+            <a href="/post-listing" class="btn-primary-rentiva" style="width:auto; padding:11px 24px; margin-top:0;">
+              Post a Listing
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {% endif %}
+
+    </div>
+  </div>
+
+  <footer>
+    <p><span>RENTIVA</span> &mdash; The Official Student Housing Platform for FUTA &copy; 2025</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // OTP digit navigation
+    const digits = document.querySelectorAll('.otp-digit');
+    const hidden = document.getElementById('otpHidden');
+
+    if (digits.length > 0) {
+      digits.forEach((input, i) => {
+        input.addEventListener('input', () => {
+          input.value = input.value.replace(/[^0-9]/g, '');
+          if (input.value && i < digits.length - 1) digits[i + 1].focus();
+          updateHidden();
+        });
+
+        input.addEventListener('keydown', e => {
+          if (e.key === 'Backspace' && !input.value && i > 0) {
+            digits[i - 1].focus();
+          }
+        });
+
+        // Handle paste
+        input.addEventListener('paste', e => {
+          e.preventDefault();
+          const pasted = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
+          pasted.split('').forEach((char, j) => {
+            if (digits[i + j]) digits[i + j].value = char;
+          });
+          updateHidden();
+          const next = Math.min(i + pasted.length, digits.length - 1);
+          digits[next].focus();
+        });
+      });
+
+      digits[0].focus();
+
+      function updateHidden() {
+        if (hidden) hidden.value = Array.from(digits).map(d => d.value).join('');
+      }
+    }
+
+    // Image previews
+    function setupPreview(inputId, previewId, zoneId) {
+      const input = document.getElementById(inputId);
+      const preview = document.getElementById(previewId);
+      const zone = document.getElementById(zoneId);
+      if (!input) return;
+
+      input.addEventListener('change', function() {
+        const file = this.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+          zone.querySelector('.upload-icon').style.display = 'none';
+          zone.querySelector('p').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    setupPreview('idInput', 'idPreview', 'idZone');
+    setupPreview('selfieInput', 'selfiePreview', 'selfieZone');
+  </script>
 </body>
 </html>
