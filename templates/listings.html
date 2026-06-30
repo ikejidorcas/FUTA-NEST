@@ -1,397 +1,621 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-BNGWXVNRNC"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BNGWXVNRNC"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-BNGWXVNRNC');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rentiva — Available Houses</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #1565c0;
+      --blue-light: #4da6ff;
+      --orange: #f6a623;
+      --dark: #050d1f;
+      --body-bg: #f8faff;
+    }
 
-  gtag('config', 'G-BNGWXVNRNC');
-</script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rentiva — Available Houses</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        * { font-family: 'Inter', sans-serif; }
-        body { background-color: #f8faff; margin: 0; }
+    * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
+    body { background-color: var(--body-bg); margin: 0; }
 
-        .navbar {
-            background-color: #050d1f;
-            padding: 16px 40px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
+    /* ── NAVBAR ── */
+    .navbar {
+      background-color: var(--dark);
+      padding: 10px 40px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
 
-        .brand-name {
-            font-size: 1.5rem;
-            font-weight: 900;
-            letter-spacing: 3px;
-            color: #4da6ff;
-            text-decoration: none;
-            text-transform: uppercase;
-        }
+    .navbar-logo { height: 44px; width: auto; object-fit: contain; }
 
-        .btn-post {
-            background: linear-gradient(135deg, #1565c0, #1e88e5);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 22px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-decoration: none;
-        }
+    .btn-post {
+      background: linear-gradient(135deg, var(--orange), #e0951a);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 22px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
 
-        .btn-post:hover { opacity: 0.85; color: white; }
+    .btn-post:hover { opacity: 0.9; color: white; transform: translateY(-1px); }
 
-        .page-header {
-            background: #050d1f;
-            padding: 50px 0 40px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
-        }
+    /* ── PAGE HEADER ── */
+    .page-header {
+      background: var(--dark);
+      padding: 50px 0 40px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      position: relative;
+      overflow: hidden;
+    }
 
-        .page-header h2 {
-            font-size: 2rem;
-            font-weight: 800;
-            color: white;
-            margin-bottom: 8px;
-        }
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(246,166,35,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
 
-        .page-header p { color: #8ab4d4; margin: 0; }
+    .page-header h2 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 8px;
+      position: relative;
+    }
 
-        .filter-section {
-            background: white;
-            border-bottom: 1px solid #e8edf5;
-            padding: 20px 0;
-            position: sticky;
-            top: 65px;
-            z-index: 100;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-        }
+    .page-header p { color: #8ab4d4; margin: 0; position: relative; }
 
-        .filter-section .form-control,
-        .filter-section .form-select {
-            border: 2px solid #e8edf5;
-            border-radius: 10px;
-            padding: 10px 14px;
-            font-size: 0.9rem;
-        }
+    /* ── FILTER BAR ── */
+    .filter-section {
+      background: white;
+      border-bottom: 1px solid #e8edf5;
+      padding: 16px 0;
+      position: sticky;
+      top: 64px;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
 
-        .filter-section .form-control:focus,
-        .filter-section .form-select:focus {
-            border-color: #4da6ff;
-            box-shadow: none;
-        }
+    .filter-section .form-control,
+    .filter-section .form-select {
+      border: 2px solid #e8edf5;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
 
-        .btn-filter {
-            background: linear-gradient(135deg, #1565c0, #1e88e5);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 11px 28px;
-            font-weight: 600;
-            width: 100%;
-        }
+    .filter-section .form-control:focus,
+    .filter-section .form-select:focus {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(246,166,35,0.1);
+    }
 
-        .btn-filter:hover { opacity: 0.9; color: white; }
+    .btn-filter {
+      background: linear-gradient(135deg, var(--blue), #1e88e5);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 11px 28px;
+      font-weight: 600;
+      width: 100%;
+      transition: opacity 0.2s;
+    }
 
-        .results-info {
-            font-size: 0.9rem;
-            color: #7a8ca0;
-            padding: 20px 0 10px;
-        }
+    .btn-filter:hover { opacity: 0.9; color: white; }
 
-        .results-info strong { color: #050d1f; }
+    /* ── RESULTS INFO ── */
+    .results-info {
+      font-size: 0.875rem;
+      color: #7a8ca0;
+      padding: 20px 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-        .listing-card {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
-            border: 1px solid #e8edf5;
-            transition: all 0.2s;
-            height: 100%;
-        }
+    .results-info strong { color: var(--dark); }
 
-        .listing-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(21,101,192,0.12);
-            border-color: #4da6ff;
-        }
+    .verified-filter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(21,101,192,0.07);
+      border: 1px solid rgba(21,101,192,0.15);
+      color: var(--blue);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
 
-        .listing-img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
+    .verified-filter-btn:hover,
+    .verified-filter-btn.active {
+      background: var(--blue);
+      color: white;
+      border-color: var(--blue);
+    }
 
-        .listing-body { padding: 20px; }
+    /* ── LISTING CARD ── */
+    .listing-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+      border: 1px solid #e8edf5;
+      transition: all 0.2s;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
 
-        .price-tag {
-            background: #050d1f;
-            color: #4da6ff;
-            font-weight: 800;
-            font-size: 1rem;
-            padding: 5px 14px;
-            border-radius: 20px;
-            display: inline-block;
-        }
+    .listing-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(21,101,192,0.12);
+      border-color: var(--blue-light);
+    }
 
-        .area-tag {
-            background: #e3f0ff;
-            color: #1565c0;
-            font-weight: 600;
-            font-size: 0.78rem;
-            padding: 5px 12px;
-            border-radius: 20px;
-            display: inline-block;
-        }
+    .listing-card.verified-card:hover {
+      box-shadow: 0 12px 40px rgba(21,101,192,0.18);
+      border-color: var(--blue);
+    }
 
-        .listing-title {
-            font-weight: 700;
-            font-size: 1rem;
-            color: #050d1f;
-            margin: 12px 0 6px;
-        }
+    /* Image wrapper */
+    .listing-img-wrap {
+      position: relative;
+      overflow: hidden;
+      height: 200px;
+      flex-shrink: 0;
+    }
 
-        .listing-desc {
-            font-size: 0.85rem;
-            color: #7a8ca0;
-            line-height: 1.5;
-            margin-bottom: 10px;
-        }
+    .listing-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
 
-        .listing-meta {
-            font-size: 0.82rem;
-            color: #7a8ca0;
-            margin-bottom: 16px;
-            padding-top: 10px;
-            border-top: 1px solid #f0f4ff;
-        }
+    .listing-card:hover .listing-img { transform: scale(1.03); }
 
-        .listing-meta strong { color: #050d1f; }
+    /* ── VERIFIED CORNER BADGE ── */
+    .verified-corner {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: linear-gradient(135deg, var(--blue), #1e88e5);
+      color: white;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 5px 11px;
+      border-radius: 20px;
+      box-shadow: 0 2px 10px rgba(21,101,192,0.35);
+      z-index: 2;
+      letter-spacing: 0.2px;
+    }
 
-        .btn-video {
-            background: #f0f4ff;
-            color: #1565c0;
-            border: 1px solid #c8d9f5;
-            border-radius: 8px;
-            padding: 8px 14px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            width: 100%;
-            text-decoration: none;
-            display: block;
-            text-align: center;
-            margin-bottom: 8px;
-            transition: all 0.2s;
-        }
+    .verified-corner svg {
+      width: 11px; height: 11px;
+      fill: none;
+      stroke: white;
+      stroke-width: 2.5;
+      flex-shrink: 0;
+    }
 
-        .btn-video:hover {
-            background: #1565c0;
-            color: white;
-            border-color: #1565c0;
-        }
+    /* Featured corner badge */
+    .featured-corner {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: linear-gradient(135deg, var(--orange), #e0951a);
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(246,166,35,0.4);
+      z-index: 2;
+      letter-spacing: 0.3px;
+    }
 
-        .btn-call {
-            background: linear-gradient(135deg, #1565c0, #1e88e5);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 9px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            width: 100%;
-            text-decoration: none;
-            display: block;
-            text-align: center;
-            margin-bottom: 8px;
-            transition: opacity 0.2s;
-        }
+    /* ── LISTING BODY ── */
+    .listing-body {
+      padding: 18px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
 
-        .btn-call:hover { opacity: 0.9; color: white; }
+    .listing-tags {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
 
-        .btn-whatsapp {
-            background: #25D366;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 9px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            width: 100%;
-            text-decoration: none;
-            display: block;
-            text-align: center;
-            transition: opacity 0.2s;
-        }
+    .price-tag {
+      background: var(--dark);
+      color: var(--blue-light);
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 5px 13px;
+      border-radius: 20px;
+      display: inline-block;
+    }
 
-        .btn-whatsapp:hover { opacity: 0.9; color: white; }
+    .area-tag {
+      background: rgba(246,166,35,0.1);
+      color: #b45309;
+      font-weight: 600;
+      font-size: 0.75rem;
+      padding: 4px 11px;
+      border-radius: 20px;
+      display: inline-block;
+    }
 
-        .no-results {
-            text-align: center;
-            padding: 80px 20px;
-        }
+    .listing-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--dark);
+      margin: 8px 0 6px;
+      line-height: 1.4;
+    }
 
-        .no-results h4 {
-            font-weight: 700;
-            color: #050d1f;
-            margin-bottom: 10px;
-        }
+    .listing-desc {
+      font-size: 0.82rem;
+      color: #7a8ca0;
+      line-height: 1.55;
+      margin-bottom: 10px;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
 
-        .no-results p { color: #7a8ca0; }
+    /* ── LISTING META WITH INLINE VERIFIED BADGE ── */
+    .listing-meta {
+      font-size: 0.8rem;
+      color: #7a8ca0;
+      margin-bottom: 14px;
+      padding-top: 10px;
+      border-top: 1px solid #f0f4ff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
 
-        .btn-clear {
-            background: linear-gradient(135deg, #1565c0, #1e88e5);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 12px 28px;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 16px;
-        }
+    .listing-meta strong { color: var(--dark); }
 
-        .btn-clear:hover { opacity: 0.9; color: white; }
+    /* ── INLINE VERIFIED BADGE ── */
+    .verified-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: linear-gradient(135deg, rgba(21,101,192,0.08), rgba(77,166,255,0.06));
+      border: 1px solid rgba(21,101,192,0.2);
+      color: var(--blue);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+      white-space: nowrap;
+      letter-spacing: 0.2px;
+    }
 
-        footer {
-            background: #030810;
-            color: #4a6080;
-            padding: 30px 0;
-            text-align: center;
-            font-size: 0.9rem;
-            margin-top: 60px;
-        }
+    .verified-badge svg {
+      width: 10px; height: 10px;
+      fill: none;
+      stroke: var(--blue);
+      stroke-width: 2.5;
+      flex-shrink: 0;
+    }
 
-        footer span { color: #4da6ff; font-weight: 700; }
-    </style>
+    /* ── ACTION BUTTONS ── */
+    .listing-actions { margin-top: auto; }
+
+    .btn-video {
+      background: #f0f4ff;
+      color: var(--blue);
+      border: 1px solid #c8d9f5;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      width: 100%;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+      margin-bottom: 7px;
+      transition: all 0.2s;
+    }
+
+    .btn-video:hover { background: var(--blue); color: white; border-color: var(--blue); }
+
+    .btn-call {
+      background: linear-gradient(135deg, var(--blue), #1e88e5);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 9px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      width: 100%;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+      margin-bottom: 7px;
+      transition: opacity 0.2s;
+    }
+
+    .btn-call:hover { opacity: 0.9; color: white; }
+
+    .btn-whatsapp {
+      background: #25D366;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 9px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      width: 100%;
+      text-decoration: none;
+      display: block;
+      text-align: center;
+      margin-bottom: 7px;
+      transition: opacity 0.2s;
+    }
+
+    .btn-whatsapp:hover { opacity: 0.9; color: white; }
+
+    .btn-report {
+      display: block;
+      text-align: center;
+      color: #dc3545;
+      font-size: 0.75rem;
+      margin-top: 4px;
+      text-decoration: none;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .btn-report:hover { opacity: 1; color: #dc3545; }
+
+    /* ── VERIFIED CARD ACCENT ── */
+    .verified-card {
+      border-top: 3px solid var(--blue) !important;
+    }
+
+    /* ── NO RESULTS ── */
+    .no-results {
+      text-align: center;
+      padding: 80px 20px;
+    }
+
+    .no-results h4 { font-weight: 700; color: var(--dark); margin-bottom: 10px; }
+    .no-results p  { color: #7a8ca0; }
+
+    .btn-clear {
+      background: linear-gradient(135deg, var(--blue), #1e88e5);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 28px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 16px;
+      transition: opacity 0.2s;
+    }
+
+    .btn-clear:hover { opacity: 0.9; color: white; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #030810;
+      color: #4a6080;
+      padding: 30px 0;
+      text-align: center;
+      font-size: 0.9rem;
+      margin-top: 60px;
+    }
+
+    footer span { color: var(--orange); font-weight: 700; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .navbar { padding: 10px 16px; }
+      .page-header { padding: 36px 0 28px; }
+      .filter-section { top: 64px; }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Navbar -->
-    <nav class="navbar d-flex justify-content-between align-items-center">
-        <a href="/" class="brand-name">RENTIVA</a>
-        <a href="/post-listing" class="btn-post">Post a Listing</a>
-    </nav>
+  <!-- NAVBAR -->
+  <nav class="navbar d-flex justify-content-between align-items-center">
+    <a href="/"><img src="/static/rentiva-logo.png" alt="Rentiva" class="navbar-logo"></a>
+    <a href="/post-listing" class="btn-post">Post a Listing</a>
+  </nav>
 
-    <!-- Page Header -->
-    <div class="page-header">
-        <div class="container">
-            <h2>Available Houses</h2>
-            <p>
-                {% if area %}Showing results for <strong style="color:white;">{{ area }}</strong>{% endif %}
-                {% if max_price %} — under <strong style="color:white;">₦{{ max_price }}</strong>/yr{% endif %}
-                {% if not area and not max_price %}Browse all available listings{% endif %}
-            </p>
-        </div>
-    </div>
-
-    <!-- Filter Bar -->
-    <div class="filter-section">
-        <div class="container">
-            <form action="/listings" method="GET">
-                <div class="row g-2 align-items-end">
-                    <div class="col-md-4">
-                        <select name="area" class="form-select">
-                            <option value="">All Areas</option>
-                            <option value="North Gate" {% if area == 'North Gate' %}selected{% endif %}>North Gate</option>
-                            <option value="West Gate"  {% if area == 'West Gate'  %}selected{% endif %}>West Gate</option>
-                            <option value="South Gate" {% if area == 'South Gate' %}selected{% endif %}>South Gate</option>
-                            <option value="Ipinsa"     {% if area == 'Ipinsa'     %}selected{% endif %}>Ipinsa</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <input type="number" name="max_price" class="form-control"
-                               placeholder="Max price per year (₦)"
-                               value="{{ max_price if max_price }}">
-                    </div>
-                    <div class="col-md-4">
-                        <button type="submit" class="btn-filter btn">Search</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
+  <!-- PAGE HEADER -->
+  <div class="page-header">
     <div class="container">
-        <div class="results-info">
-            <strong>{{ listings|length }}</strong> listing{{ 's' if listings|length != 1 }} found
+      <h2>Available Houses</h2>
+      <p>
+        {% if area %}Showing results for <strong style="color:white;">{{ area }}</strong>{% endif %}
+        {% if max_price %} — under <strong style="color:white;">₦{{ max_price }}</strong>/yr{% endif %}
+        {% if not area and not max_price %}Browse all available listings near FUTA{% endif %}
+      </p>
+    </div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-section">
+    <div class="container">
+      <form action="/listings" method="GET">
+        <div class="row g-2 align-items-end">
+          <div class="col-md-4">
+            <select name="area" class="form-select">
+              <option value="">All Areas</option>
+              <option value="North Gate" {% if area == 'North Gate' %}selected{% endif %}>North Gate</option>
+              <option value="West Gate"  {% if area == 'West Gate'  %}selected{% endif %}>West Gate</option>
+              <option value="South Gate" {% if area == 'South Gate' %}selected{% endif %}>South Gate</option>
+              <option value="Ipinsa"     {% if area == 'Ipinsa'     %}selected{% endif %}>Ipinsa</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <input type="number" name="max_price" class="form-control"
+                   placeholder="Max price per year (₦)"
+                   value="{{ max_price if max_price else '' }}">
+          </div>
+          <div class="col-md-4">
+            <button type="submit" class="btn-filter btn">Search Houses</button>
+          </div>
         </div>
+      </form>
+    </div>
+  </div>
 
-        {% if listings %}
-        <div class="row">
-            {% for listing in listings %}
-            <div class="col-md-4 mb-4">
-                <div class="listing-card">
+  <!-- LISTINGS -->
+  <div class="container">
 
-                    {% if listing.image_url %}
-                    <img src="{{ listing.image_url }}" alt="House photo" class="listing-img">
-                    {% else %}
-                    <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&q=80"
-                         alt="House photo" class="listing-img">
-                    {% endif %}
-
-                    <div class="listing-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="price-tag">₦{{ "{:,}".format(listing.price) }}/yr</span>
-                            <span class="area-tag">{{ listing.area }}</span>
-                        </div>
-
-                        <div class="listing-title">{{ listing.title }}</div>
-                        <div class="listing-desc">{{ listing.description }}</div>
-
-                        <div class="listing-meta">
-    <strong>{{ listing.rooms }}</strong> Room(s) &nbsp;&bull;&nbsp;
-    Agent: <strong>{{ listing.agent_name }}</strong>
-    {% if listing.verified %}
-    <span style="background:#d1fae5;color:#065f46;border-radius:20px;padding:2px 8px;font-size:0.72rem;font-weight:700;margin-left:4px;">✓ Verified</span>
-    {% endif %}
-</div>
-
-                        {% if listing.video_url %}
-                        <a href="{{ listing.video_url }}" target="_blank" class="btn-video">
-                            Watch Video Tour
-                        </a>
-                        {% endif %}
-
-                        <a href="tel:{{ listing.phone }}" class="btn-call">
-                            Call Agent
-                        </a>
-                        <a href="https://wa.me/{{ listing.phone }}?text=Hello {{ listing.agent_name }},%0A%0AI found your listing on Rentiva and I am interested.%0A%0A*House:* {{ listing.title }}%0A*Area:* {{ listing.area }}%0A*Price:* ₦{{ '{:,}'.format(listing.price) }}/yr%0A*Rooms:* {{ listing.rooms }}{% if listing.video_url %}%0A*Video Tour:* {{ listing.video_url }}{% endif %}%0A%0AIs this house still available?" 
-   target="_blank" class="btn-whatsapp">
-    WhatsApp Agent
-</a>
-                            <a href="/report/{{ listing.id }}" 
-   style="display:block;text-align:center;color:#dc3545;font-size:0.8rem;margin-top:10px;text-decoration:none;">
-    Report this listing
-</a>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-
-        {% else %}
-        <div class="no-results">
-            <h4>No listings found</h4>
-            <p>Try a different area or increase your budget.</p>
-            <a href="/listings" class="btn-clear">See All Listings</a>
-        </div>
-        {% endif %}
+    <!-- Results info + verified filter -->
+    <div class="results-info">
+      <span><strong>{{ listings | length }}</strong> listing{{ 's' if listings | length != 1 }} found</span>
+      {% set verified_count = listings | selectattr('verified') | list | length %}
+      {% if verified_count > 0 %}
+        <span style="color:#d1d5db;">•</span>
+        <span>
+          <strong style="color:var(--blue);">{{ verified_count }}</strong>
+          verified agent{{ 's' if verified_count != 1 }}
+        </span>
+      {% endif %}
     </div>
 
-    <footer>
-        <span>RENTIVA</span> &mdash; The Official Student Housing Platform for FUTA &copy; 2025
-    </footer>
+    {% if listings %}
+    <div class="row">
+      {% for listing in listings %}
+      <div class="col-md-4 mb-4">
+        <div class="listing-card {% if listing.verified %}verified-card{% endif %}">
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+          <!-- IMAGE -->
+          <div class="listing-img-wrap">
+            {% if listing.image_url %}
+              <img src="{{ listing.image_url }}" alt="{{ listing.title }}" class="listing-img">
+            {% else %}
+              <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&q=80"
+                   alt="House photo" class="listing-img">
+            {% endif %}
+
+            <!-- VERIFIED CORNER BADGE -->
+            {% if listing.verified %}
+            <div class="verified-corner">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+              </svg>
+              Verified Agent
+            </div>
+            {% endif %}
+
+            <!-- FEATURED CORNER BADGE -->
+            {% if listing.featured %}
+            <div class="featured-corner">⭐ Featured</div>
+            {% endif %}
+          </div>
+
+          <!-- BODY -->
+          <div class="listing-body">
+            <div class="listing-tags">
+              <span class="price-tag">₦{{ "{:,}".format(listing.price) }}/yr</span>
+              <span class="area-tag">{{ listing.area }}</span>
+            </div>
+
+            <div class="listing-title">{{ listing.title }}</div>
+            <div class="listing-desc">{{ listing.description }}</div>
+
+            <!-- META + INLINE VERIFIED BADGE -->
+            <div class="listing-meta">
+              <strong>{{ listing.rooms }}</strong> Room(s)
+              <span style="color:#e5e7eb;">•</span>
+              <span>{{ listing.agent_name }}</span>
+              {% if listing.verified %}
+              <span class="verified-badge">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+                Verified
+              </span>
+              {% endif %}
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="listing-actions">
+              {% if listing.video_url %}
+              <a href="{{ listing.video_url }}" target="_blank" class="btn-video">
+                📹 Watch Video Tour
+              </a>
+              {% endif %}
+
+              <a href="tel:{{ listing.phone }}" class="btn-call">
+                📞 Call Agent
+              </a>
+
+              <a href="https://wa.me/{{ listing.phone }}?text=Hello%20{{ listing.agent_name | urlencode }},%0A%0AI%20found%20your%20listing%20on%20Rentiva%20and%20I%20am%20interested.%0A%0A*House:*%20{{ listing.title | urlencode }}%0A*Area:*%20{{ listing.area }}%0A*Price:*%20%E2%82%A6{{ '{:,}'.format(listing.price) }}/yr%0A*Rooms:*%20{{ listing.rooms }}{% if listing.video_url %}%0A*Video:*%20{{ listing.video_url | urlencode }}{% endif %}%0A%0AIs%20this%20still%20available%3F"
+                 target="_blank" class="btn-whatsapp">
+                💬 WhatsApp Agent
+              </a>
+
+              <a href="/report/{{ listing.id }}" class="btn-report">
+                Report this listing
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="no-results">
+      <div style="font-size:3rem; margin-bottom:16px;">🏠</div>
+      <h4>No listings found</h4>
+      <p>Try a different area or increase your budget.</p>
+      <a href="/listings" class="btn-clear">See All Listings</a>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <footer>
+    <span>RENTIVA</span> &mdash; The Official Student Housing Platform for FUTA &copy; 2025
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

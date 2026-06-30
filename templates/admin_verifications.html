@@ -9,7 +9,6 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
   <style>
     * { font-family: 'Inter', sans-serif; box-sizing: border-box; }
-
     body { background: #f4f6fb; margin: 0; }
 
     /* TOPBAR */
@@ -44,74 +43,61 @@
       border-radius: 20px;
     }
 
-    .topbar-nav { display: flex; align-items: center; gap: 8px; }
+    .topbar-nav { display: flex; align-items: center; gap: 4px; }
 
     .topbar-nav a {
-      color: rgba(255,255,255,0.7);
+      color: rgba(255,255,255,0.65);
       text-decoration: none;
-      font-size: 0.875rem;
+      font-size: 0.82rem;
       font-weight: 500;
-      padding: 8px 16px;
+      padding: 7px 14px;
       border-radius: 6px;
       transition: all 0.2s;
       position: relative;
     }
 
-    .topbar-nav a:hover { color: #fff; background: rgba(255,255,255,0.07); }
+    .topbar-nav a:hover { color: #fff; background: rgba(255,255,255,0.06); }
     .topbar-nav a.active { color: #fff; }
 
     .btn-logout {
-      border: 1.5px solid rgba(255,255,255,0.25);
+      border: 1.5px solid rgba(255,255,255,0.2);
       color: #fff;
       background: transparent;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 600;
-      padding: 7px 20px;
+      padding: 6px 18px;
       border-radius: 6px;
       text-decoration: none;
       transition: all 0.2s;
     }
 
-    .btn-logout:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .btn-logout:hover { background: rgba(255,255,255,0.07); color: #fff; }
 
-    .pending-dot {
+    .nav-badge {
       position: absolute;
-      top: 4px; right: 8px;
+      top: 3px; right: 6px;
       background: #ef4444;
       color: white;
-      font-size: 0.6rem;
+      font-size: 0.58rem;
       font-weight: 700;
       padding: 1px 5px;
-      border-radius: 10px;
+      border-radius: 8px;
+      line-height: 1.4;
     }
 
     /* HERO */
-    .page-hero {
-      background: #0d1117;
-      padding: 36px 40px 32px;
-    }
-
-    .page-hero h1 {
-      color: #fff;
-      font-size: 1.9rem;
-      font-weight: 800;
-      margin: 0 0 6px;
-    }
-
-    .page-hero p {
-      color: rgba(255,255,255,0.45);
-      font-size: 0.9rem;
-      margin: 0;
-    }
+    .page-hero { background: #0d1117; padding: 36px 40px 32px; }
+    .page-hero h1 { color: #fff; font-size: 1.8rem; font-weight: 800; margin: 0 0 6px; }
+    .page-hero p  { color: rgba(255,255,255,0.4); font-size: 0.875rem; margin: 0; }
 
     /* MAIN */
-    .main { padding: 32px 40px; max-width: 1200px; }
+    .main { padding: 28px 40px; max-width: 1200px; }
 
     /* STAT CARDS */
     .stat-card {
       background: #fff;
       border-radius: 12px;
-      padding: 24px;
+      padding: 22px 20px;
       border-top: 3px solid transparent;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
@@ -121,191 +107,181 @@
     .stat-card.green { border-top-color: #22c55e; }
     .stat-card.red   { border-top-color: #ef4444; }
 
-    .stat-number { font-size: 2rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
-    .stat-card.blue  .stat-number { color: #4a9eff; }
-    .stat-card.amber .stat-number { color: #f6a623; }
-    .stat-card.green .stat-number { color: #22c55e; }
-    .stat-card.red   .stat-number { color: #ef4444; }
-    .stat-label { color: #6b7280; font-size: 0.8rem; font-weight: 500; }
+    .stat-num { font-size: 1.9rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .stat-card.blue  .stat-num { color: #4a9eff; }
+    .stat-card.amber .stat-num { color: #f6a623; }
+    .stat-card.green .stat-num { color: #22c55e; }
+    .stat-card.red   .stat-num { color: #ef4444; }
+    .stat-lbl { color: #6b7280; font-size: 0.78rem; font-weight: 500; }
 
-    /* STATUS TABS */
-    .status-tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
+    /* TABS */
+    .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
 
-    .status-tab {
-      padding: 8px 18px;
+    .tab-btn {
+      padding: 7px 16px;
       border-radius: 8px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 600;
       text-decoration: none;
       border: 1.5px solid #e5e7eb;
       color: #6b7280;
       background: white;
       transition: all 0.2s;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
     }
 
-    .status-tab:hover { border-color: #4a9eff; color: #4a9eff; }
-
-    .status-tab.active-tab {
-      background: #4a9eff;
-      border-color: #4a9eff;
-      color: white;
-    }
+    .tab-btn:hover  { border-color: #4a9eff; color: #4a9eff; }
+    .tab-btn.active { background: #4a9eff; border-color: #4a9eff; color: white; }
 
     .tab-count {
       background: rgba(0,0,0,0.1);
-      padding: 1px 7px;
-      border-radius: 10px;
-      font-size: 0.72rem;
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-size: 0.7rem;
     }
 
-    .status-tab.active-tab .tab-count { background: rgba(255,255,255,0.25); }
+    .tab-btn.active .tab-count { background: rgba(255,255,255,0.25); }
 
-    /* CARD */
-    .card-panel {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      overflow: hidden;
-    }
+    /* PANEL */
+    .panel { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; }
 
-    .card-panel-header {
-      padding: 18px 24px;
+    .panel-head {
+      padding: 16px 24px;
       border-bottom: 1px solid #f3f4f6;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .card-panel-header h5 {
-      font-size: 0.95rem;
+    .panel-head h5 { font-size: 0.9rem; font-weight: 700; color: #111827; margin: 0; }
+
+    .count-pill {
+      background: #f3f4f6;
+      color: #6b7280;
+      font-size: 0.72rem;
       font-weight: 700;
-      color: #111827;
-      margin: 0;
+      padding: 2px 10px;
+      border-radius: 20px;
     }
 
     /* VERIFICATION ROWS */
     .ver-row {
-      padding: 20px 24px;
+      padding: 18px 24px;
       border-bottom: 1px solid #f9fafb;
       display: grid;
-      grid-template-columns: 1fr 1fr auto;
+      grid-template-columns: 1.2fr 1fr 180px;
       gap: 20px;
       align-items: start;
-      transition: background 0.15s;
     }
 
     .ver-row:last-child { border-bottom: none; }
     .ver-row:hover { background: #fafafa; }
 
     /* Agent info */
-    .agent-info h6 {
-      font-size: 0.95rem;
+    .a-name {
+      font-size: 0.9rem;
       font-weight: 700;
       color: #111827;
-      margin: 0 0 4px;
+      margin: 0 0 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .agent-meta {
-      font-size: 0.8rem;
+    .a-meta {
+      font-size: 0.78rem;
       color: #6b7280;
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 3px;
     }
 
-    .agent-meta span { display: flex; align-items: center; gap: 5px; }
+    .a-meta span { display: flex; align-items: center; gap: 5px; }
 
-    /* Document preview */
-    .doc-previews { display: flex; gap: 12px; }
-
-    .doc-thumb {
-      display: flex;
-      flex-direction: column;
+    /* Status badges */
+    .s-badge {
+      display: inline-flex;
       align-items: center;
       gap: 4px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 20px;
     }
 
-    .doc-thumb img {
-      width: 80px; height: 64px;
+    .s-pending  { background: rgba(245,158,11,0.1);  color: #b45309; }
+    .s-approved { background: rgba(34,197,94,0.1);   color: #15803d; }
+    .s-rejected { background: rgba(239,68,68,0.1);   color: #dc2626; }
+
+    .otp-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(77,166,255,0.1);
+      color: #1d4ed8;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 8px;
+    }
+
+    .rejection-note {
+      font-size: 0.75rem;
+      color: #dc2626;
+      background: rgba(239,68,68,0.06);
+      padding: 6px 10px;
+      border-radius: 6px;
+      margin-top: 8px;
+    }
+
+    .ver-date { font-size: 0.72rem; color: #9ca3af; margin-top: 8px; }
+
+    /* Document previews */
+    .docs { display: flex; gap: 12px; }
+
+    .doc-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+
+    .doc-img {
+      width: 88px; height: 68px;
       object-fit: cover;
       border-radius: 8px;
       border: 1.5px solid #e5e7eb;
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: all 0.2s;
     }
 
-    .doc-thumb img:hover { transform: scale(1.05); border-color: #4a9eff; }
-
-    .doc-thumb span {
-      font-size: 0.65rem;
-      color: #9ca3af;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
+    .doc-img:hover { border-color: #4a9eff; transform: scale(1.04); }
 
     .doc-missing {
-      width: 80px; height: 64px;
+      width: 88px; height: 68px;
       border-radius: 8px;
       background: #f9fafb;
       border: 1.5px dashed #e5e7eb;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
     }
 
-    /* Status badge */
-    .badge-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 20px;
-    }
+    .doc-lbl { font-size: 0.62rem; color: #9ca3af; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    .badge-pending  { background: rgba(245,158,11,0.1);  color: #b45309; }
-    .badge-approved { background: rgba(34,197,94,0.1);   color: #15803d; }
-    .badge-rejected { background: rgba(239,68,68,0.1);   color: #dc2626; }
-
-    /* OTP verified indicator */
-    .otp-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(77,166,255,0.08);
-      color: #1d4ed8;
-      font-size: 0.68rem;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 10px;
-    }
-
-    /* Action buttons */
-    .actions { display: flex; flex-direction: column; gap: 8px; min-width: 160px; }
+    /* Actions */
+    .actions-col { display: flex; flex-direction: column; gap: 7px; }
 
     .btn-approve {
       background: #22c55e;
       color: white;
       border: none;
       border-radius: 7px;
-      padding: 8px 16px;
-      font-size: 0.8rem;
+      padding: 8px 14px;
+      font-size: 0.78rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
       text-decoration: none;
-      text-align: center;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -314,42 +290,36 @@
 
     .btn-approve:hover { background: #16a34a; color: white; }
 
-    .btn-reject-toggle {
+    .btn-reject-open {
       background: rgba(239,68,68,0.08);
       color: #dc2626;
       border: 1px solid rgba(239,68,68,0.15);
       border-radius: 7px;
-      padding: 8px 16px;
-      font-size: 0.8rem;
+      padding: 8px 14px;
+      font-size: 0.78rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
       text-align: center;
     }
 
-    .btn-reject-toggle:hover { background: rgba(239,68,68,0.15); }
+    .btn-reject-open:hover { background: rgba(239,68,68,0.14); }
 
-    /* Reject form (hidden by default) */
-    .reject-form {
-      display: none;
-      margin-top: 6px;
-    }
+    .reject-panel { display: none; }
 
-    .reject-form textarea {
+    .reject-panel textarea {
       width: 100%;
       border: 1.5px solid #e5e7eb;
       border-radius: 8px;
-      padding: 8px 12px;
-      font-size: 0.8rem;
+      padding: 8px 10px;
+      font-size: 0.78rem;
       font-family: 'Inter', sans-serif;
       resize: vertical;
-      min-height: 70px;
+      min-height: 64px;
+      margin-bottom: 6px;
     }
 
-    .reject-form textarea:focus {
-      border-color: #ef4444;
-      outline: none;
-    }
+    .reject-panel textarea:focus { border-color: #ef4444; outline: none; }
 
     .btn-reject-confirm {
       background: #ef4444;
@@ -357,104 +327,70 @@
       border: none;
       border-radius: 7px;
       padding: 7px 14px;
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       font-weight: 600;
       cursor: pointer;
-      margin-top: 6px;
       width: 100%;
     }
 
     .btn-reject-confirm:hover { background: #dc2626; }
 
-    /* Already actioned */
-    .action-done {
-      font-size: 0.8rem;
-      color: #9ca3af;
-      font-style: italic;
-    }
+    .action-done { font-size: 0.78rem; color: #9ca3af; font-style: italic; text-align: center; padding: 4px 0; }
 
-    .rejection-note {
-      font-size: 0.75rem;
-      color: #dc2626;
-      margin-top: 4px;
-      background: rgba(239,68,68,0.06);
-      padding: 6px 10px;
-      border-radius: 6px;
-    }
+    /* EMPTY */
+    .empty { padding: 56px 20px; text-align: center; color: #9ca3af; }
+    .empty i { font-size: 2.5rem; display: block; margin-bottom: 10px; color: #e5e7eb; }
+    .empty p { margin: 0; font-size: 0.875rem; }
 
-    /* Date */
-    .ver-date {
-      font-size: 0.75rem;
-      color: #9ca3af;
-      margin-top: 6px;
-    }
-
-    /* Empty state */
-    .empty-state {
-      padding: 60px 20px;
-      text-align: center;
-      color: #9ca3af;
-    }
-
-    .empty-state i { font-size: 2.5rem; display: block; margin-bottom: 10px; color: #e5e7eb; }
-
-    /* Flash */
-    .alert {
-      border: none;
-      border-radius: 10px;
-      font-size: 0.875rem;
-      font-weight: 500;
-    }
-
+    /* FLASH */
+    .alert { border: none; border-radius: 10px; font-size: 0.875rem; font-weight: 500; }
     .alert-success { background: rgba(34,197,94,0.1); color: #14532d; }
     .alert-danger  { background: rgba(239,68,68,0.1);  color: #7f1d1d; }
     .alert-warning { background: rgba(245,158,11,0.1); color: #78350f; }
 
-    /* IMAGE MODAL */
-    .img-modal {
+    /* LIGHTBOX */
+    .lightbox {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.85);
-      z-index: 1000;
+      background: rgba(0,0,0,0.88);
+      z-index: 9999;
       align-items: center;
       justify-content: center;
     }
 
-    .img-modal.open { display: flex; }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: 92vw; max-height: 88vh; border-radius: 10px; }
 
-    .img-modal img {
-      max-width: 90vw;
-      max-height: 90vh;
-      border-radius: 12px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-    }
-
-    .img-modal-close {
+    .lightbox-close {
       position: absolute;
-      top: 20px; right: 24px;
+      top: 18px; right: 22px;
       color: white;
       font-size: 2rem;
       cursor: pointer;
       background: none;
       border: none;
       line-height: 1;
+      opacity: 0.8;
     }
+
+    .lightbox-close:hover { opacity: 1; }
 
     @media (max-width: 768px) {
       .topbar { padding: 0 16px; }
       .page-hero { padding: 24px 16px; }
-      .main { padding: 20px 16px; }
+      .main { padding: 16px; }
       .ver-row { grid-template-columns: 1fr; }
+      .topbar-nav a span { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- IMAGE LIGHTBOX MODAL -->
-  <div class="img-modal" id="imgModal" onclick="closeModal()">
-    <button class="img-modal-close" onclick="closeModal()">×</button>
-    <img id="modalImg" src="" alt="Document">
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()">×</button>
+    <img id="lightboxImg" src="" alt="Document">
   </div>
 
   <!-- TOPBAR -->
@@ -469,8 +405,8 @@
       <a href="/admin/agents">Agents</a>
       <a href="/admin/verifications" class="active">
         Verifications
-        {% if counts.pending > 0 %}
-          <span class="pending-dot">{{ counts.pending }}</span>
+        {% if counts is defined and counts.pending > 0 %}
+          <span class="nav-badge">{{ counts.pending }}</span>
         {% endif %}
       </a>
       <a href="/admin/ambassadors">Ambassadors</a>
@@ -484,13 +420,12 @@
     <p>Review identity documents and approve or reject agent verification requests.</p>
   </div>
 
-  <!-- MAIN -->
   <div class="main">
 
-    <!-- Flash -->
+    <!-- FLASH -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
-        <div class="mb-4">
+        <div class="mb-3">
           {% for category, message in messages %}
             <div class="alert alert-{{ category }} alert-dismissible fade show">
               {{ message }}
@@ -501,77 +436,66 @@
       {% endif %}
     {% endwith %}
 
-    <!-- Stat cards -->
+    <!-- STAT CARDS -->
+    {% set c = counts | default({'all': 0, 'pending': 0, 'approved': 0, 'rejected': 0}) %}
     <div class="row g-3 mb-4">
       <div class="col-6 col-md-3">
         <div class="stat-card blue">
-          <div class="stat-number">{{ counts.all }}</div>
-          <div class="stat-label">Total Applications</div>
+          <div class="stat-num">{{ c.all }}</div>
+          <div class="stat-lbl">Total Applications</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
         <div class="stat-card amber">
-          <div class="stat-number">{{ counts.pending }}</div>
-          <div class="stat-label">Pending Review</div>
+          <div class="stat-num">{{ c.pending }}</div>
+          <div class="stat-lbl">Pending Review</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
         <div class="stat-card green">
-          <div class="stat-number">{{ counts.approved }}</div>
-          <div class="stat-label">Approved</div>
+          <div class="stat-num">{{ c.approved }}</div>
+          <div class="stat-lbl">Approved</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
         <div class="stat-card red">
-          <div class="stat-number">{{ counts.rejected }}</div>
-          <div class="stat-label">Rejected</div>
+          <div class="stat-num">{{ c.rejected }}</div>
+          <div class="stat-lbl">Rejected</div>
         </div>
       </div>
     </div>
 
-    <!-- Status tabs -->
-    <div class="status-tabs">
-      <a href="/admin/verifications?status=pending"
-         class="status-tab {% if status_filter == 'pending' %}active-tab{% endif %}">
-        ⏳ Pending <span class="tab-count">{{ counts.pending }}</span>
-      </a>
-      <a href="/admin/verifications?status=approved"
-         class="status-tab {% if status_filter == 'approved' %}active-tab{% endif %}">
-        ✓ Approved <span class="tab-count">{{ counts.approved }}</span>
-      </a>
-      <a href="/admin/verifications?status=rejected"
-         class="status-tab {% if status_filter == 'rejected' %}active-tab{% endif %}">
-        ✗ Rejected <span class="tab-count">{{ counts.rejected }}</span>
-      </a>
-      <a href="/admin/verifications?status=all"
-         class="status-tab {% if status_filter == 'all' %}active-tab{% endif %}">
-        All <span class="tab-count">{{ counts.all }}</span>
-      </a>
+    <!-- TABS -->
+    {% set sf = status_filter | default('pending') %}
+    <div class="tabs">
+      <a href="?status=pending"  class="tab-btn {% if sf == 'pending'  %}active{% endif %}">⏳ Pending  <span class="tab-count">{{ c.pending }}</span></a>
+      <a href="?status=approved" class="tab-btn {% if sf == 'approved' %}active{% endif %}">✓ Approved <span class="tab-count">{{ c.approved }}</span></a>
+      <a href="?status=rejected" class="tab-btn {% if sf == 'rejected' %}active{% endif %}">✗ Rejected <span class="tab-count">{{ c.rejected }}</span></a>
+      <a href="?status=all"      class="tab-btn {% if sf == 'all'      %}active{% endif %}">All <span class="tab-count">{{ c.all }}</span></a>
     </div>
 
-    <!-- Verifications list -->
-    <div class="card-panel">
-      <div class="card-panel-header">
+    <!-- VERIFICATIONS LIST -->
+    <div class="panel">
+      <div class="panel-head">
         <h5>
-          {% if status_filter == 'pending' %}Pending Review
-          {% elif status_filter == 'approved' %}Approved Agents
-          {% elif status_filter == 'rejected' %}Rejected Applications
+          {% if sf == 'pending' %}Pending Review
+          {% elif sf == 'approved' %}Approved Agents
+          {% elif sf == 'rejected' %}Rejected Applications
           {% else %}All Applications{% endif %}
         </h5>
-        <span style="background:#f3f4f6; color:#6b7280; font-size:0.75rem; font-weight:700; padding:3px 10px; border-radius:20px;">
-          {{ verifications | length }}
-        </span>
+        <span class="count-pill">{{ verifications | default([]) | length }}</span>
       </div>
 
-      {% if verifications %}
-        {% for ver in verifications %}
+      {% set vlist = verifications | default([]) %}
+      {% if vlist %}
+        {% for ver in vlist %}
         <div class="ver-row">
 
-          <!-- Agent Info -->
-          <div class="agent-info">
-            <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
-              <h6>{{ ver.agent_name }}</h6>
-              <span class="badge-status badge-{{ ver.status or 'pending' }}">
+          <!-- AGENT INFO -->
+          <div>
+            <div class="a-name">
+              {{ ver.agent_name | default('Unknown') }}
+              <span class="s-badge s-{{ ver.status | default('pending') }}">
                 {% if ver.status == 'approved' %}✓ Approved
                 {% elif ver.status == 'rejected' %}✗ Rejected
                 {% else %}⏳ Pending{% endif %}
@@ -580,11 +504,11 @@
                 <span class="otp-badge">📱 OTP ✓</span>
               {% endif %}
             </div>
-            <div class="agent-meta">
-              <span><i class="bi bi-telephone"></i> {{ ver.phone }}</span>
-              <span><i class="bi bi-card-heading"></i> {{ ver.id_type or 'Government ID' }}</span>
+            <div class="a-meta">
+              <span><i class="bi bi-telephone"></i> {{ ver.phone | default('—') }}</span>
+              <span><i class="bi bi-card-heading"></i> {{ ver.id_type | default('Government ID') | replace('_', ' ') | title }}</span>
               {% if ver.reviewed_at %}
-                <span><i class="bi bi-clock"></i> Reviewed {{ ver.reviewed_at[:10] }}</span>
+                <span><i class="bi bi-clock-history"></i> Reviewed {{ ver.reviewed_at[:10] }}</span>
               {% endif %}
             </div>
             {% if ver.rejection_reason %}
@@ -595,73 +519,61 @@
             <div class="ver-date">Submitted: {{ ver.created_at[:10] if ver.created_at else '—' }}</div>
           </div>
 
-          <!-- Documents -->
+          <!-- DOCUMENTS -->
           <div>
-            <p style="font-size:0.72rem; color:#9ca3af; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;">Documents</p>
-            <div class="doc-previews">
-              <div class="doc-thumb">
+            <p style="font-size:0.68rem; color:#9ca3af; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;">
+              Documents <small style="color:#d1d5db; font-weight:400;">(click to enlarge)</small>
+            </p>
+            <div class="docs">
+              <div class="doc-item">
                 {% if ver.id_url %}
-                  <img src="{{ ver.id_url }}" alt="Government ID"
-                       onclick="openModal('{{ ver.id_url }}')"
-                       title="Click to enlarge">
+                  <img class="doc-img" src="{{ ver.id_url }}" alt="ID"
+                       onclick="openLightbox('{{ ver.id_url }}')">
                 {% else %}
                   <div class="doc-missing">🪪</div>
                 {% endif %}
-                <span>ID</span>
+                <span class="doc-lbl">Gov. ID</span>
               </div>
-              <div class="doc-thumb">
+              <div class="doc-item">
                 {% if ver.selfie_url %}
-                  <img src="{{ ver.selfie_url }}" alt="Selfie"
-                       onclick="openModal('{{ ver.selfie_url }}')"
-                       title="Click to enlarge">
+                  <img class="doc-img" src="{{ ver.selfie_url }}" alt="Selfie"
+                       onclick="openLightbox('{{ ver.selfie_url }}')">
                 {% else %}
                   <div class="doc-missing">🤳</div>
                 {% endif %}
-                <span>Selfie</span>
+                <span class="doc-lbl">Selfie</span>
               </div>
             </div>
           </div>
 
-          <!-- Actions -->
-          <div class="actions">
-            {% if ver.status == 'pending' or not ver.status %}
-              <!-- Approve -->
+          <!-- ACTIONS -->
+          <div class="actions-col">
+            {% set vstatus = ver.status | default('pending') %}
+
+            {% if vstatus in ['pending', 'rejected'] %}
               <a href="/admin/verify-agent/{{ ver.id }}/{{ ver.phone }}"
                  class="btn-approve"
-                 onclick="return confirm('Approve {{ ver.agent_name }} as a verified agent?')">
-                <i class="bi bi-patch-check-fill"></i> Approve
+                 onclick="return confirm('Approve {{ ver.agent_name | default('this agent') }} as verified?')">
+                <i class="bi bi-patch-check-fill"></i>
+                {% if vstatus == 'rejected' %}Override & Approve{% else %}Approve{% endif %}
               </a>
+            {% endif %}
 
-              <!-- Reject toggle -->
-              <button class="btn-reject-toggle" onclick="toggleReject('{{ ver.id }}')">
+            {% if vstatus == 'pending' %}
+              <button class="btn-reject-open" onclick="toggleReject('{{ ver.id }}')">
                 <i class="bi bi-x-circle"></i> Reject
               </button>
-
-              <!-- Reject form -->
-              <div class="reject-form" id="reject-{{ ver.id }}">
+              <div class="reject-panel" id="reject-{{ ver.id }}">
                 <form action="/admin/reject-agent/{{ ver.id }}/{{ ver.phone }}" method="POST">
-                  <textarea name="rejection_reason"
-                            placeholder="Reason for rejection (agent will see this)..."
-                            required></textarea>
-                  <button type="submit" class="btn-reject-confirm">
-                    Confirm Rejection
-                  </button>
+                  <textarea name="rejection_reason" required
+                            placeholder="Reason for rejection (agent will see this)..."></textarea>
+                  <button type="submit" class="btn-reject-confirm">Confirm Rejection</button>
                 </form>
               </div>
-
-            {% elif ver.status == 'approved' %}
+            {% elif vstatus == 'approved' %}
               <span class="action-done">
-                <i class="bi bi-patch-check-fill" style="color:#22c55e;"></i>
-                Verified
+                <i class="bi bi-patch-check-fill" style="color:#22c55e;"></i> Verified
               </span>
-
-            {% elif ver.status == 'rejected' %}
-              <!-- Allow re-review -->
-              <a href="/admin/verify-agent/{{ ver.id }}/{{ ver.phone }}"
-                 class="btn-approve"
-                 onclick="return confirm('Override rejection and approve {{ ver.agent_name }}?')">
-                <i class="bi bi-arrow-counterclockwise"></i> Approve Anyway
-              </a>
             {% endif %}
           </div>
 
@@ -669,40 +581,36 @@
         {% endfor %}
 
       {% else %}
-      <div class="empty-state">
-        <i class="bi bi-patch-check"></i>
-        <p>
-          {% if status_filter == 'pending' %}No pending verifications — all caught up!
-          {% elif status_filter == 'approved' %}No approved agents yet.
-          {% elif status_filter == 'rejected' %}No rejected applications.
-          {% else %}No verification applications yet.{% endif %}
-        </p>
-      </div>
+        <div class="empty">
+          <i class="bi bi-patch-check"></i>
+          <p>
+            {% if sf == 'pending' %}No pending verifications — all caught up! 🎉
+            {% elif sf == 'approved' %}No approved agents yet.
+            {% elif sf == 'rejected' %}No rejected applications.
+            {% else %}No verification applications yet.{% endif %}
+          </p>
+        </div>
       {% endif %}
-
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     function toggleReject(id) {
-      const form = document.getElementById('reject-' + id);
-      form.style.display = form.style.display === 'block' ? 'none' : 'block';
+      const p = document.getElementById('reject-' + id);
+      p.style.display = p.style.display === 'block' ? 'none' : 'block';
     }
 
-    function openModal(src) {
-      document.getElementById('modalImg').src = src;
-      document.getElementById('imgModal').classList.add('open');
+    function openLightbox(src) {
+      document.getElementById('lightboxImg').src = src;
+      document.getElementById('lightbox').classList.add('open');
     }
 
-    function closeModal() {
-      document.getElementById('imgModal').classList.remove('open');
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
     }
 
-    // Close modal on ESC
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeModal();
-    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
   </script>
 </body>
 </html>
